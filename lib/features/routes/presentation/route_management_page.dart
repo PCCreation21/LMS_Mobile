@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../app/theme/app_colors.dart';
 import '../state/route_controller.dart';
 import 'widgets/route_filters_bar.dart';
 import 'widgets/route_card.dart';
@@ -61,43 +63,7 @@ class _RouteManagementPageState extends ConsumerState<RouteManagementPage> {
                   padding: const EdgeInsets.all(18),
                   child: Column(
                     children: [
-                      // Green header like your screenshot
-                      Container(
-                        height: 54,
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF2F5F52).withOpacity(0.92),
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        child: Row(
-                          children: [
-                            IconButton(
-                              onPressed: () => Navigator.pop(context),
-                              icon: const Icon(
-                                Icons.arrow_back,
-                                color: Colors.white,
-                              ),
-                            ),
-                            const Expanded(
-                              child: Text(
-                                "Route Management",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w800,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            IconButton(
-                              onPressed: () {
-                                // TODO: open create route page
-                              },
-                              icon: const Icon(Icons.add, color: Colors.white),
-                            ),
-                          ],
-                        ),
-                      ),
+                      _HeaderBar(onBack: () => context.pop()),
 
                       const SizedBox(height: 14),
 
@@ -112,6 +78,7 @@ class _RouteManagementPageState extends ConsumerState<RouteManagementPage> {
                           ),
                         ),
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
                               "Route Management",
@@ -183,49 +150,10 @@ class _RouteManagementPageState extends ConsumerState<RouteManagementPage> {
                               )
                             else
                               isDesktop
-                                  ? RouteTable(
-                                      rows: state.rows,
-                                      onEdit: (r) {
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          SnackBar(
-                                            content: Text(
-                                              "Edit ${r.routeCode}",
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      onDelete: (r) {
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          SnackBar(
-                                            content: Text(
-                                              "Delete ${r.routeCode}",
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    )
+                                  ? RouteTable(rows: state.rows)
                                   : Column(
                                       children: state.rows
-                                          .map(
-                                            (r) => RouteCard(
-                                              row: r,
-                                              onEdit: () {
-                                                ScaffoldMessenger.of(
-                                                  context,
-                                                ).showSnackBar(
-                                                  SnackBar(
-                                                    content: Text(
-                                                      "Edit ${r.routeCode}",
-                                                    ),
-                                                  ),
-                                                );
-                                              },
-                                            ),
-                                          )
+                                          .map((r) => RouteCard(row: r))
                                           .toList(),
                                     ),
                           ],
@@ -237,6 +165,59 @@ class _RouteManagementPageState extends ConsumerState<RouteManagementPage> {
               },
             ),
           ),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: 1,
+        selectedItemColor: AppColors.secondary,
+        unselectedItemColor: Colors.grey,
+        type: BottomNavigationBarType.fixed,
+        onTap: (index) {
+          if (index == 0) context.go('/home');
+          if (index == 1) context.go('/customers');
+        },
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Dashboard"),
+          BottomNavigationBarItem(icon: Icon(Icons.people), label: "Customers"),
+          BottomNavigationBarItem(icon: Icon(Icons.payment), label: "Payments"),
+          BottomNavigationBarItem(icon: Icon(Icons.more_horiz), label: "More"),
+        ],
+      ),
+    );
+  }
+}
+
+class _HeaderBar extends StatelessWidget {
+  const _HeaderBar({required this.onBack});
+  final VoidCallback onBack;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+      child: Row(
+        children: [
+          IconButton(
+            onPressed: onBack,
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+          ),
+          const Spacer(),
+          Row(
+            children: [
+              Image.asset('assets/images/logo.png', height: 26),
+              const SizedBox(width: 10),
+              const Text(
+                "GOLDEN CASH",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.0,
+                ),
+              ),
+            ],
+          ),
+          const Spacer(),
+          const CircleAvatar(radius: 18, backgroundColor: Colors.white24),
         ],
       ),
     );

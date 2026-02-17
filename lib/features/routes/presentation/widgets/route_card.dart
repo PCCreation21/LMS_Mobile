@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import '../../domain/route_models.dart';
 
 class RouteCard extends StatelessWidget {
-  const RouteCard({super.key, required this.row, required this.onEdit});
+  const RouteCard({super.key, required this.row});
 
   final RouteRowModel row;
-  final VoidCallback onEdit;
 
   String _date(DateTime? d) {
     if (d == null) return "";
@@ -51,31 +50,6 @@ class RouteCard extends StatelessWidget {
                   fontSize: 18,
                 ),
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  if (row.date != null) Text(_date(row.date)),
-                  const SizedBox(height: 6),
-                  if (row.status != null)
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: st.bg,
-                        borderRadius: BorderRadius.circular(999),
-                      ),
-                      child: Text(
-                        row.status!,
-                        style: TextStyle(
-                          color: st.fg,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
             ],
           ),
           const SizedBox(height: 6),
@@ -84,13 +58,6 @@ class RouteCard extends StatelessWidget {
             row.routeName,
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
           ),
-          const SizedBox(height: 6),
-
-          if (row.officerName != null)
-            Text(
-              "Officer: ${row.officerName!}",
-              style: TextStyle(color: Colors.black.withOpacity(0.65)),
-            ),
 
           const SizedBox(height: 10),
           Divider(height: 1, color: Colors.black.withOpacity(0.08)),
@@ -104,16 +71,6 @@ class RouteCard extends StatelessWidget {
                   style: TextStyle(color: Colors.black.withOpacity(0.70)),
                 ),
               ),
-              const SizedBox(width: 10),
-              if (row.showEdit)
-                InkWell(
-                  onTap: onEdit,
-                  borderRadius: BorderRadius.circular(12),
-                  child: const Padding(
-                    padding: EdgeInsets.all(6),
-                    child: Icon(Icons.edit_outlined),
-                  ),
-                ),
             ],
           ),
         ],

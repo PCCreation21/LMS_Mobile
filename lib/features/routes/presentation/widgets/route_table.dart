@@ -2,16 +2,9 @@ import 'package:flutter/material.dart';
 import '../../domain/route_models.dart';
 
 class RouteTable extends StatelessWidget {
-  const RouteTable({
-    super.key,
-    required this.rows,
-    required this.onEdit,
-    required this.onDelete,
-  });
+  const RouteTable({super.key, required this.rows});
 
   final List<RouteRowModel> rows;
-  final ValueChanged<RouteRowModel> onEdit;
-  final ValueChanged<RouteRowModel> onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +25,6 @@ class RouteTable extends StatelessWidget {
             DataColumn(label: Text("Route Code")),
             DataColumn(label: Text("Route Name")),
             DataColumn(label: Text("Route Description")),
-            DataColumn(label: Text("Actions")),
           ],
           rows: rows.map((r) {
             return DataRow(
@@ -48,20 +40,6 @@ class RouteTable extends StatelessWidget {
                 ),
                 DataCell(Text(r.routeName)),
                 DataCell(SizedBox(width: 360, child: Text(r.routeDescription))),
-                DataCell(
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: () => onEdit(r),
-                        icon: const Icon(Icons.edit_outlined),
-                      ),
-                      IconButton(
-                        onPressed: () => onDelete(r),
-                        icon: const Icon(Icons.delete_outline),
-                      ),
-                    ],
-                  ),
-                ),
               ],
             );
           }).toList(),
