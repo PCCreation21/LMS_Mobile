@@ -488,26 +488,3 @@ class _LabeledTextField extends StatelessWidget {
     );
   }
 }
-
-class _BottomNav extends StatelessWidget {
-  const _BottomNav({required this.currentIndex, required this.onTap});
-
-  final int currentIndex;
-  final ValueChanged<int> onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      currentIndex: currentIndex,
-      onTap: onTap,
-      selectedItemColor: AppColors.secondary,
-      unselectedItemColor: Colors.grey,
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: "Dashboard"),
-        BottomNavigationBarItem(icon: Icon(Icons.people), label: "Customers"),
-        BottomNavigationBarItem(icon: Icon(Icons.payment), label: "Payments"),
-        BottomNavigationBarItem(icon: Icon(Icons.grid_view), label: "More"),
-      ],
-    );
-  }
-}

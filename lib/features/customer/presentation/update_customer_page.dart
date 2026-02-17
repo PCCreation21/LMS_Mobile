@@ -128,10 +128,7 @@ class _UpdateCustomerPageState extends ConsumerState<UpdateCustomerPage> {
           SafeArea(
             child: Column(
               children: [
-                _TopHeader(
-                  breadcrumb: "Dashboard / Customers",
-                  onBack: () => context.pop(),
-                ),
+                _HeaderBar(onBack: () => context.pop()),
 
                 Expanded(
                   child: SingleChildScrollView(
@@ -333,62 +330,53 @@ class _UpdateCustomerPageState extends ConsumerState<UpdateCustomerPage> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 1,
-        onTap: (index) {
-          if (index == 0) {
-            context.go('/home');
-          } else if (index == 1) {
-            context.push('/customers');
-          }
-        },
         selectedItemColor: AppColors.secondary,
         unselectedItemColor: Colors.grey,
+        onTap: (index) {
+          if (index == 0) context.go('/home');
+          if (index == 1) context.go('/customers');
+        },
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: "Dashboard",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.people),
-            label: "Customers",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.payment),
-            label: "Payments",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.grid_view),
-            label: "More",
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Dashboard"),
+          BottomNavigationBarItem(icon: Icon(Icons.people), label: "Customers"),
+          BottomNavigationBarItem(icon: Icon(Icons.payment), label: "Payments"),
+          BottomNavigationBarItem(icon: Icon(Icons.more_horiz), label: "More"),
         ],
       ),
     );
   }
 }
 
-class _TopHeader extends StatelessWidget {
-  const _TopHeader({required this.breadcrumb, required this.onBack});
-
-  final String breadcrumb;
+class _HeaderBar extends StatelessWidget {
+  const _HeaderBar({required this.onBack});
   final VoidCallback onBack;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
       child: Row(
         children: [
           IconButton(
             onPressed: onBack,
             icon: const Icon(Icons.arrow_back, color: Colors.white),
           ),
-          const SizedBox(width: 6),
-          Expanded(
-            child: Text(
-              breadcrumb,
-              style: const TextStyle(color: Colors.white70),
-              overflow: TextOverflow.ellipsis,
-            ),
+          const Spacer(),
+          Row(
+            children: [
+              Image.asset('assets/images/logo.png', height: 26),
+              const SizedBox(width: 10),
+              const Text(
+                "GOLDEN CASH",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.0,
+                ),
+              ),
+            ],
           ),
+          const Spacer(),
           const CircleAvatar(radius: 18, backgroundColor: Colors.white24),
         ],
       ),

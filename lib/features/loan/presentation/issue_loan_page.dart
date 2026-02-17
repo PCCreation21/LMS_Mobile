@@ -23,8 +23,6 @@ class _IssueLoanPageState extends ConsumerState<IssueLoanPage> {
   final _customerNameCtrl = TextEditingController();
   final _amountCtrl = TextEditingController();
 
-  int _currentIndex = 0;
-
   @override
   void dispose() {
     _nicCtrl.dispose();
@@ -71,71 +69,15 @@ class _IssueLoanPageState extends ConsumerState<IssueLoanPage> {
             height: double.infinity,
           ),
           SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(18),
-              child: Column(
+            child: Column(
+              children: [
+                _HeaderBar(onBack: () => context.pop()),
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(18),
+                    child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Top header (logo + user)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          const CircleAvatar(
-                            radius: 20,
-                            backgroundImage: AssetImage(
-                              'assets/images/logo.png',
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          const Text(
-                            "GOLDEN CASH",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.textPrimary,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: const [
-                          CircleAvatar(
-                            radius: 18,
-                            backgroundImage: AssetImage(
-                              'assets/images/logo.png',
-                            ),
-                          ),
-                          SizedBox(width: 8),
-                          Text(
-                            "John Doe",
-                            style: TextStyle(fontWeight: FontWeight.w600),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 14),
-
-                  // Breadcrumb
-                  Row(
-                    children: const [
-                      Icon(Icons.home_outlined, size: 18),
-                      SizedBox(width: 6),
-                      Text("Dashboard"),
-                      SizedBox(width: 6),
-                      Icon(Icons.chevron_right, size: 18),
-                      SizedBox(width: 6),
-                      Text(
-                        "Loans",
-                        style: TextStyle(fontWeight: FontWeight.w700),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 14),
-
                   // Main card
                   Container(
                     width: double.infinity,
@@ -508,31 +450,65 @@ class _IssueLoanPageState extends ConsumerState<IssueLoanPage> {
                     ),
                   ),
                 ],
-              ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
       ),
 
-      // Bottom Navigation (same pattern as your HomePage)
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() => _currentIndex = index);
-          if (index == 0) {
-            context.go('/home');
-          } else if (index == 1) {
-            context.push('/customers');
-          }
-          // TODO: add routes for payments/more when you implement them
-        },
+        currentIndex: 1,
         selectedItemColor: AppColors.secondary,
         unselectedItemColor: Colors.grey,
+        onTap: (index) {
+          if (index == 0) context.go('/home');
+          if (index == 1) context.go('/customers');
+        },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Dashboard"),
           BottomNavigationBarItem(icon: Icon(Icons.people), label: "Customers"),
           BottomNavigationBarItem(icon: Icon(Icons.payment), label: "Payments"),
           BottomNavigationBarItem(icon: Icon(Icons.more_horiz), label: "More"),
+        ],
+      ),
+    );
+  }
+}
+
+class _HeaderBar extends StatelessWidget {
+  const _HeaderBar({required this.onBack});
+  final VoidCallback onBack;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+      child: Row(
+        children: [
+          IconButton(
+            onPressed: onBack,
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+          ),
+          const Spacer(),
+          Row(
+            children: [
+              Image.asset('assets/images/logo.png', height: 26),
+              const SizedBox(width: 10),
+              const Text(
+                "GOLDEN CASH",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.0,
+                ),
+              ),
+            ],
+          ),
+          const Spacer(),
+          const CircleAvatar(radius: 18, backgroundColor: Colors.white24),
         ],
       ),
     );

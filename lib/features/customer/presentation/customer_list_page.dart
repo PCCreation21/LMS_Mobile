@@ -38,37 +38,7 @@ class _CustomerListPageState extends ConsumerState<CustomerListPage> {
           SafeArea(
             child: Column(
               children: [
-                const SizedBox(height: 10),
-
-                // Header area (simple; you can reuse your app header widget)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.home_outlined, color: Colors.white),
-                      const SizedBox(width: 6),
-                      const Text(
-                        "Dashboard",
-                        style: TextStyle(color: Colors.white70),
-                      ),
-                      const Text(
-                        "  /  ",
-                        style: TextStyle(color: Colors.white70),
-                      ),
-                      const Text(
-                        "Customers",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      const Spacer(),
-                      const CircleAvatar(
-                        radius: 18,
-                        backgroundColor: Colors.white24,
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 12),
+                _HeaderBar(onBack: () => context.pop()),
 
                 Expanded(
                   child: Padding(
@@ -237,32 +207,17 @@ class _CustomerListPageState extends ConsumerState<CustomerListPage> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 1,
-        onTap: (index) {
-          if (index == 0) {
-            context.go('/home');
-          } else if (index == 1) {
-            context.go('/customers');
-          }
-        },
         selectedItemColor: AppColors.secondary,
         unselectedItemColor: Colors.grey,
+        onTap: (index) {
+          if (index == 0) context.go('/home');
+          if (index == 1) context.go('/customers');
+        },
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: "Dashboard",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.people),
-            label: "Customers",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.payment),
-            label: "Payments",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.grid_view),
-            label: "More",
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Dashboard"),
+          BottomNavigationBarItem(icon: Icon(Icons.people), label: "Customers"),
+          BottomNavigationBarItem(icon: Icon(Icons.payment), label: "Payments"),
+          BottomNavigationBarItem(icon: Icon(Icons.more_horiz), label: "More"),
         ],
       ),
     );
@@ -286,6 +241,43 @@ class _CustomerListPageState extends ConsumerState<CustomerListPage> {
             onPressed: () => Navigator.pop(context, true),
             child: const Text("Delete"),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HeaderBar extends StatelessWidget {
+  const _HeaderBar({required this.onBack});
+  final VoidCallback onBack;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+      child: Row(
+        children: [
+          IconButton(
+            onPressed: onBack,
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+          ),
+          const Spacer(),
+          Row(
+            children: [
+              Image.asset('assets/images/logo.png', height: 26),
+              const SizedBox(width: 10),
+              const Text(
+                "GOLDEN CASH",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.0,
+                ),
+              ),
+            ],
+          ),
+          const Spacer(),
+          const CircleAvatar(radius: 18, backgroundColor: Colors.white24),
         ],
       ),
     );

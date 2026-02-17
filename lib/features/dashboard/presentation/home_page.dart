@@ -136,6 +136,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                     primaryButton: "Issue Loan",
                     secondaryButton: "View Loans",
                     onPrimaryPressed: () => context.push('/loans/issue'),
+                    onSecondaryPressed: () => context.push('/loans'),
                   ),
 
                   const SizedBox(height: 16),

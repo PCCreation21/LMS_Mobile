@@ -8,6 +8,8 @@ import 'package:loan_management_system/features/customer/presentation/customer_p
 import 'package:loan_management_system/features/customer/presentation/update_customer_page.dart';
 import 'package:loan_management_system/features/dashboard/presentation/home_page.dart';
 import 'package:loan_management_system/features/loan/presentation/issue_loan_page.dart';
+import 'package:loan_management_system/features/loan/presentation/loan_details_page.dart';
+import 'package:loan_management_system/features/loan/presentation/loan_management_page.dart';
 
 import '../features/splash/presentation/splash_page.dart';
 import '../features/onboarding/presentation/onboarding_page.dart';
@@ -54,6 +56,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/loans/issue',
         builder: (context, state) => const IssueLoanPage(),
+      ),
+      GoRoute(
+        path: '/loans',
+        builder: (context, state) => const LoanManagementPage(),
+      ),
+      GoRoute(
+        path: '/loans/:loanId',
+        builder: (context, state) {
+          final loanId = state.pathParameters['loanId']!;
+          return LoanDetailsPage(loanId: loanId);
+        },
       ),
     ],
   );
