@@ -147,6 +147,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                     description: "Track rental payments.",
                     primaryButton: "Rental Payment View",
                     secondaryButton: "Route Collection Tracking",
+                    onSecondaryPressed: () =>
+                        context.push('/route-collections'),
                   ),
 
                   const SizedBox(height: 16),
@@ -156,6 +158,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                     title: "Route Management",
                     description: "View collection routes.",
                     primaryButton: "View Routes",
+                    onPrimaryPressed: () => context.push('/routes'),
                   ),
 
                   const SizedBox(height: 16),

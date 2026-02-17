@@ -343,15 +343,13 @@ class _CreateCustomerPageState extends ConsumerState<CreateCustomerPage> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 1,
-        onTap: (index) {
-          if (index == 0) {
-            context.go('/home');
-          } else if (index == 1) {
-            context.push('/customers');
-          }
-        },
         selectedItemColor: AppColors.secondary,
         unselectedItemColor: Colors.grey,
+        type: BottomNavigationBarType.fixed,
+        onTap: (index) {
+          if (index == 0) context.go('/home');
+          if (index == 1) context.go('/customers');
+        },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Dashboard"),
           BottomNavigationBarItem(icon: Icon(Icons.people), label: "Customers"),

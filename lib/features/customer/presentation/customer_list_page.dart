@@ -209,6 +209,7 @@ class _CustomerListPageState extends ConsumerState<CustomerListPage> {
         currentIndex: 1,
         selectedItemColor: AppColors.secondary,
         unselectedItemColor: Colors.grey,
+        type: BottomNavigationBarType.fixed,
         onTap: (index) {
           if (index == 0) context.go('/home');
           if (index == 1) context.go('/customers');
