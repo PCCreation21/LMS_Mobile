@@ -76,380 +76,418 @@ class _IssueLoanPageState extends ConsumerState<IssueLoanPage> {
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.all(18),
                     child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Main card
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.85),
-                      borderRadius: BorderRadius.circular(18),
-                      border: Border.all(color: Colors.white.withOpacity(0.6)),
-                    ),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            "Issue Loan",
-                            style: TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.w800,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Main card
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.85),
+                            borderRadius: BorderRadius.circular(18),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.6),
                             ),
                           ),
-                          const SizedBox(height: 6),
-                          const Text("Create a new loan for a customer"),
-                          const SizedBox(height: 16),
-
-                          // NIC + search
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Expanded(
-                                child: AppTextField(
-                                  label: "NIC*",
-                                  hint: "Enter Customer NIC Number",
-                                  controller: _nicCtrl,
-                                  validator: Validators.nic,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 2),
-                                child: InkWell(
-                                  onTap: state.isLoading
-                                      ? null
-                                      : () async {
-                                          if (Validators.nic(_nicCtrl.text) !=
-                                              null) {
-                                            _formKey.currentState?.validate();
-                                            return;
-                                          }
-                                          await controller.searchCustomerByNic(
-                                            _nicCtrl.text,
-                                          );
-                                        },
-                                  borderRadius: BorderRadius.circular(30),
-                                  child: Container(
-                                    width: 54,
-                                    height: 54,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: Colors.white,
-                                      border: Border.all(
-                                        color: Colors.black.withOpacity(0.15),
-                                      ),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(0.06),
-                                          blurRadius: 8,
-                                          offset: const Offset(0, 3),
-                                        ),
-                                      ],
-                                    ),
-                                    child: state.isLoading
-                                        ? const Padding(
-                                            padding: EdgeInsets.all(14),
-                                            child: CircularProgressIndicator(
-                                              strokeWidth: 2,
-                                            ),
-                                          )
-                                        : const Icon(
-                                            Icons.search,
-                                            color: Color(0xFFF59E0B),
-                                          ),
+                          child: Form(
+                            key: _formKey,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  "Issue Loan",
+                                  style: TextStyle(
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.w800,
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
+                                const SizedBox(height: 6),
+                                const Text("Create a new loan for a customer"),
+                                const SizedBox(height: 16),
 
-                          // Customer Name (readonly)
-                          AppTextField(
-                            label: "Customer Name *",
-                            hint: "Customer name will appear here",
-                            controller: _customerNameCtrl,
-                            readOnly: true,
-                            validator: (v) {
-                              if ((v ?? '').trim().isEmpty) {
-                                return "Search NIC to load customer";
-                              }
-                              return null;
-                            },
-                          ),
-
-                          const SizedBox(height: 12),
-
-                          // Amount
-                          AppTextField(
-                            label: "Loan Amount (LKR) *",
-                            hint: "Enter Loan Amount",
-                            controller: _amountCtrl,
-                            keyboardType: TextInputType.number,
-                            validator: (v) {
-                              final val = (v ?? '').trim();
-                              if (val.isEmpty) return "Loan amount is required";
-                              final numVal = double.tryParse(
-                                val.replaceAll(',', ''),
-                              );
-                              if (numVal == null || numVal <= 0)
-                                return "Enter a valid amount";
-                              return null;
-                            },
-                          ),
-
-                          const SizedBox(height: 12),
-
-                          // Package
-                          AppDropdownField<LoanPackageLite>(
-                            label: "Loan Package *",
-                            value: state.selectedPackage,
-                            hintText: "Select Loan Package",
-                            items: state.packages
-                                .map(
-                                  (p) => DropdownMenuItem(
-                                    value: p,
-                                    child: Text(p.name),
-                                  ),
-                                )
-                                .toList(),
-                            onChanged: controller.selectPackage,
-                            validator: (v) =>
-                                v == null ? "Loan package is required" : null,
-                          ),
-
-                          const SizedBox(height: 12),
-
-                          // Dates row
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                // NIC + search
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
-                                    const Text(
-                                      "Start Date*",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w600,
+                                    Expanded(
+                                      child: AppTextField(
+                                        label: "NIC*",
+                                        hint: "Enter Customer NIC Number",
+                                        controller: _nicCtrl,
+                                        validator: Validators.nic,
                                       ),
                                     ),
-                                    const SizedBox(height: 8),
-                                    SizedBox(
-                                      height: 56,
+                                    const SizedBox(width: 12),
+                                    Padding(
+                                      padding: const EdgeInsets.only(bottom: 2),
                                       child: InkWell(
-                                        onTap: () => _pickStartDate(controller),
-                                        borderRadius: BorderRadius.circular(12),
+                                        onTap: state.isLoading
+                                            ? null
+                                            : () async {
+                                                if (Validators.nic(
+                                                      _nicCtrl.text,
+                                                    ) !=
+                                                    null) {
+                                                  _formKey.currentState
+                                                      ?.validate();
+                                                  return;
+                                                }
+                                                await controller
+                                                    .searchCustomerByNic(
+                                                      _nicCtrl.text,
+                                                    );
+                                              },
+                                        borderRadius: BorderRadius.circular(30),
                                         child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 14,
-                                          ),
+                                          width: 54,
+                                          height: 54,
                                           decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
                                             color: Colors.white,
-                                            borderRadius: BorderRadius.circular(
-                                              12,
-                                            ),
                                             border: Border.all(
                                               color: Colors.black.withOpacity(
                                                 0.15,
                                               ),
                                             ),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black.withOpacity(
+                                                  0.06,
+                                                ),
+                                                blurRadius: 8,
+                                                offset: const Offset(0, 3),
+                                              ),
+                                            ],
                                           ),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text(
-                                                _fmtDate(state.startDate),
+                                          child: state.isLoading
+                                              ? const Padding(
+                                                  padding: EdgeInsets.all(14),
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                        strokeWidth: 2,
+                                                      ),
+                                                )
+                                              : const Icon(
+                                                  Icons.search,
+                                                  color: Color(0xFFF59E0B),
+                                                ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 12),
+
+                                // Customer Name (readonly)
+                                AppTextField(
+                                  label: "Customer Name *",
+                                  hint: "Customer name will appear here",
+                                  controller: _customerNameCtrl,
+                                  readOnly: true,
+                                  validator: (v) {
+                                    if ((v ?? '').trim().isEmpty) {
+                                      return "Search NIC to load customer";
+                                    }
+                                    return null;
+                                  },
+                                ),
+
+                                const SizedBox(height: 12),
+
+                                // Amount
+                                AppTextField(
+                                  label: "Loan Amount (LKR) *",
+                                  hint: "Enter Loan Amount",
+                                  controller: _amountCtrl,
+                                  keyboardType: TextInputType.number,
+                                  validator: (v) {
+                                    final val = (v ?? '').trim();
+                                    if (val.isEmpty)
+                                      return "Loan amount is required";
+                                    final numVal = double.tryParse(
+                                      val.replaceAll(',', ''),
+                                    );
+                                    if (numVal == null || numVal <= 0)
+                                      return "Enter a valid amount";
+                                    return null;
+                                  },
+                                ),
+
+                                const SizedBox(height: 12),
+
+                                // Package
+                                AppDropdownField<LoanPackageLite>(
+                                  label: "Loan Package *",
+                                  value: state.selectedPackage,
+                                  hintText: "Select Loan Package",
+                                  items: state.packages
+                                      .map(
+                                        (p) => DropdownMenuItem(
+                                          value: p,
+                                          child: Text(p.name),
+                                        ),
+                                      )
+                                      .toList(),
+                                  onChanged: controller.selectPackage,
+                                  validator: (v) => v == null
+                                      ? "Loan package is required"
+                                      : null,
+                                ),
+
+                                const SizedBox(height: 12),
+
+                                // Dates row
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const Text(
+                                            "Start Date*",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          SizedBox(
+                                            height: 56,
+                                            child: InkWell(
+                                              onTap: () =>
+                                                  _pickStartDate(controller),
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal: 14,
+                                                    ),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                  border: Border.all(
+                                                    color: Colors.black
+                                                        .withOpacity(0.15),
+                                                  ),
+                                                ),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Text(
+                                                      _fmtDate(state.startDate),
+                                                      style: TextStyle(
+                                                        color:
+                                                            state.startDate ==
+                                                                null
+                                                            ? Colors.black
+                                                                  .withOpacity(
+                                                                    0.45,
+                                                                  )
+                                                            : Colors.black,
+                                                      ),
+                                                    ),
+                                                    const Icon(
+                                                      Icons.calendar_today,
+                                                      size: 18,
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+
+                                    const SizedBox(width: 16),
+
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const Text(
+                                            "End Date",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          SizedBox(
+                                            height: 56,
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 14,
+                                                  ),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                border: Border.all(
+                                                  color: Colors.black
+                                                      .withOpacity(0.15),
+                                                ),
+                                              ),
+                                              alignment: Alignment.centerLeft,
+                                              child: Text(
+                                                _fmtDate(state.endDate),
                                                 style: TextStyle(
-                                                  color: state.startDate == null
+                                                  color: state.endDate == null
                                                       ? Colors.black
                                                             .withOpacity(0.45)
                                                       : Colors.black,
                                                 ),
                                               ),
-                                              const Icon(
-                                                Icons.calendar_today,
-                                                size: 18,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-
-                              const SizedBox(width: 16),
-
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text(
-                                      "End Date",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    SizedBox(
-                                      height: 56,
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 14,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.circular(
-                                            12,
-                                          ),
-                                          border: Border.all(
-                                            color: Colors.black.withOpacity(
-                                              0.15,
                                             ),
                                           ),
-                                        ),
-                                        alignment: Alignment.centerLeft,
-                                        child: Text(
-                                          _fmtDate(state.endDate),
-                                          style: TextStyle(
-                                            color: state.endDate == null
-                                                ? Colors.black.withOpacity(0.45)
-                                                : Colors.black,
+                                          const SizedBox(height: 6),
+                                          Text(
+                                            "Automatically calculated\nbased on package.",
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.black.withOpacity(
+                                                0.5,
+                                              ),
+                                            ),
                                           ),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 6),
-                                    Text(
-                                      "Automatically calculated\nbased on package.",
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.black.withOpacity(0.5),
+                                        ],
                                       ),
                                     ),
                                   ],
                                 ),
-                              ),
-                            ],
-                          ),
 
-                          if (state.error != null) ...[
-                            const SizedBox(height: 12),
-                            Text(
-                              state.error!,
-                              style: const TextStyle(
-                                color: Colors.red,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-
-                          const SizedBox(height: 18),
-
-                          // Buttons
-                          Row(
-                            children: [
-                              Expanded(
-                                child: OutlinedButton(
-                                  onPressed: state.isLoading
-                                      ? null
-                                      : () => context.pop(),
-                                  style: OutlinedButton.styleFrom(
-                                    minimumSize: const Size.fromHeight(48),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
+                                if (state.error != null) ...[
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    state.error!,
+                                    style: const TextStyle(
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.w600,
                                     ),
                                   ),
-                                  child: const Text("Cancel"),
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: ElevatedButton(
-                                  onPressed: state.isLoading
-                                      ? null
-                                      : () async {
-                                          final ok =
-                                              _formKey.currentState
-                                                  ?.validate() ??
-                                              false;
-                                          if (!ok) return;
+                                ],
 
-                                          if (state.selectedPackage == null ||
-                                              state.startDate == null ||
-                                              state.endDate == null) {
-                                            return;
-                                          }
+                                const SizedBox(height: 18),
 
-                                          final amount = double.parse(
-                                            _amountCtrl.text.trim().replaceAll(
-                                              ',',
-                                              '',
+                                // Buttons
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: OutlinedButton(
+                                        onPressed: state.isLoading
+                                            ? null
+                                            : () => context.pop(),
+                                        style: OutlinedButton.styleFrom(
+                                          minimumSize: const Size.fromHeight(
+                                            48,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              12,
                                             ),
-                                          );
+                                          ),
+                                        ),
+                                        child: const Text("Cancel"),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: ElevatedButton(
+                                        onPressed: state.isLoading
+                                            ? null
+                                            : () async {
+                                                final ok =
+                                                    _formKey.currentState
+                                                        ?.validate() ??
+                                                    false;
+                                                if (!ok) return;
 
-                                          final loanId = await controller
-                                              .issueLoan(
-                                                nic: _nicCtrl.text.trim(),
-                                                amount: amount,
-                                                pkg: state.selectedPackage!,
-                                                startDate: state.startDate!,
-                                                endDate: state.endDate!,
-                                              );
+                                                if (state.selectedPackage ==
+                                                        null ||
+                                                    state.startDate == null ||
+                                                    state.endDate == null) {
+                                                  return;
+                                                }
 
-                                          if (!mounted) return;
+                                                final amount = double.parse(
+                                                  _amountCtrl.text
+                                                      .trim()
+                                                      .replaceAll(',', ''),
+                                                );
 
-                                          if (loanId != null) {
-                                            ScaffoldMessenger.of(
-                                              context,
-                                            ).showSnackBar(
-                                              const SnackBar(
-                                                content: Text(
-                                                  "Loan issued successfully",
+                                                final loanId = await controller
+                                                    .issueLoan(
+                                                      nic: _nicCtrl.text.trim(),
+                                                      amount: amount,
+                                                      pkg: state
+                                                          .selectedPackage!,
+                                                      startDate:
+                                                          state.startDate!,
+                                                      endDate: state.endDate!,
+                                                    );
+
+                                                if (!mounted) return;
+
+                                                if (loanId != null) {
+                                                  ScaffoldMessenger.of(
+                                                    context,
+                                                  ).showSnackBar(
+                                                    const SnackBar(
+                                                      content: Text(
+                                                        "Loan issued successfully",
+                                                      ),
+                                                    ),
+                                                  );
+                                                  context.go(
+                                                    '/receipt/$loanId',
+                                                  );
+                                                }
+                                              },
+                                        style: ElevatedButton.styleFrom(
+                                          minimumSize: const Size.fromHeight(
+                                            48,
+                                          ),
+                                          backgroundColor: const Color(
+                                            0xFFC8922D,
+                                          ),
+                                          foregroundColor: Colors.white,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
+                                        ),
+                                        child: state.isLoading
+                                            ? const SizedBox(
+                                                width: 22,
+                                                height: 22,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                      strokeWidth: 2.4,
+                                                      color: Colors.white,
+                                                    ),
+                                              )
+                                            : const Text(
+                                                "Issue Loan",
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w700,
                                                 ),
                                               ),
-                                            );
-                                            context.go('/receipt/$loanId');
-                                          }
-                                        },
-                                  style: ElevatedButton.styleFrom(
-                                    minimumSize: const Size.fromHeight(48),
-                                    backgroundColor: const Color(0xFFC8922D),
-                                    foregroundColor: Colors.white,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
+                                      ),
                                     ),
-                                  ),
-                                  child: state.isLoading
-                                      ? const SizedBox(
-                                          width: 22,
-                                          height: 22,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2.4,
-                                            color: Colors.white,
-                                          ),
-                                        )
-                                      : const Text(
-                                          "Issue Loan",
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w700,
-                                          ),
-                                        ),
+                                  ],
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -475,10 +513,19 @@ class _IssueLoanPageState extends ConsumerState<IssueLoanPage> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Dashboard"),
           BottomNavigationBarItem(icon: Icon(Icons.people), label: "Customer"),
-          BottomNavigationBarItem(icon: Icon(Icons.attach_money), label: "Loan"),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.attach_money),
+            label: "Loan",
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.wallet), label: "Wallet"),
-          BottomNavigationBarItem(icon: Icon(Icons.location_on), label: "Route"),
-          BottomNavigationBarItem(icon: Icon(Icons.card_giftcard), label: "Packages"),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.location_on),
+            label: "Route",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.card_giftcard),
+            label: "Packages",
+          ),
         ],
       ),
     );

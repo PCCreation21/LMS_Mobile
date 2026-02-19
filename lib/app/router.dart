@@ -14,7 +14,6 @@ import 'package:loan_management_system/features/loan_packages/presentation/loan_
 import 'package:loan_management_system/features/receipts/presentation/payment_receipt_page.dart';
 import 'package:loan_management_system/features/route_collection_tracking/presentation/route_collection_tracking_page.dart';
 import 'package:loan_management_system/features/routes/presentation/route_management_page.dart';
-
 import '../features/splash/presentation/splash_page.dart';
 import '../features/onboarding/presentation/onboarding_page.dart';
 import '../features/auth/presentation/login_page.dart';

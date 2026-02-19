@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
 import '../../../app/theme/app_colors.dart';
-
 import '../../../core/utils/validators.dart';
 import '../domain/customer_models.dart';
 import '../state/customer_list_controller.dart';
@@ -18,7 +16,6 @@ class UpdateCustomerPage extends ConsumerStatefulWidget {
 
 class _UpdateCustomerPageState extends ConsumerState<UpdateCustomerPage> {
   final _formKey = GlobalKey<FormState>();
-
   final _nicCtrl = TextEditingController();
   final _nameCtrl = TextEditingController();
   final _phoneCtrl = TextEditingController();
@@ -108,7 +105,7 @@ class _UpdateCustomerPageState extends ConsumerState<UpdateCustomerPage> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(customerListProvider);
-    final controller = ref.read(customerListProvider.notifier);
+    //final controller = ref.read(customerListProvider.notifier);
 
     final customer = state.all.firstWhere((c) => c.id == widget.id);
 

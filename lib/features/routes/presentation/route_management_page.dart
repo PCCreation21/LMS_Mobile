@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
-import '../../../app/theme/app_colors.dart';
+import '../../../app/widgets/app_bottom_nav.dart';
 import '../state/route_controller.dart';
 import 'widgets/route_filters_bar.dart';
 import 'widgets/route_card.dart';
@@ -35,9 +34,6 @@ class _RouteManagementPageState extends ConsumerState<RouteManagementPage> {
   Widget build(BuildContext context) {
     final state = ref.watch(routeProvider);
     final controller = ref.read(routeProvider.notifier);
-
-    // Keep controller state in sync with textfield (only update on Apply)
-    // But we still set text here if state changes (optional).
     if (_queryCtrl.text != state.filters.query) {
       _queryCtrl.text = state.filters.query;
       _queryCtrl.selection = TextSelection.fromPosition(
@@ -167,27 +163,9 @@ class _RouteManagementPageState extends ConsumerState<RouteManagementPage> {
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar: const AppBottomNav(
         currentIndex: 4,
-        selectedItemColor: AppColors.secondary,
-        unselectedItemColor: Colors.grey,
-        type: BottomNavigationBarType.fixed,
-        onTap: (index) {
-          if (index == 0) context.go('/home');
-          if (index == 1) context.push('/customers');
-          if (index == 2) context.push('/loans');
-          if (index == 3) context.push('/route-collections');
-          if (index == 4) context.go('/routes');
-          if (index == 5) context.push('/loan-packages');
-        },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Dashboard"),
-          BottomNavigationBarItem(icon: Icon(Icons.people), label: "Customer"),
-          BottomNavigationBarItem(icon: Icon(Icons.attach_money), label: "Loan"),
-          BottomNavigationBarItem(icon: Icon(Icons.wallet), label: "Wallet"),
-          BottomNavigationBarItem(icon: Icon(Icons.location_on), label: "Route"),
-          BottomNavigationBarItem(icon: Icon(Icons.card_giftcard), label: "Packages"),
-        ],
+        pageName: "Route",
       ),
     );
   }

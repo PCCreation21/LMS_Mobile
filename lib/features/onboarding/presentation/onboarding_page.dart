@@ -14,7 +14,7 @@ class OnboardingPage extends ConsumerStatefulWidget {
 
 class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   final _controller = PageController();
-  int _index = 0;
+  //int _index = 0;
 
   @override
   void dispose() {

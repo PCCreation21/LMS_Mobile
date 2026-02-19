@@ -6,26 +6,26 @@ class RouteCard extends StatelessWidget {
 
   final RouteRowModel row;
 
-  String _date(DateTime? d) {
-    if (d == null) return "";
-    final y = d.year.toString().padLeft(4, '0');
-    final m = d.month.toString().padLeft(2, '0');
-    final dd = d.day.toString().padLeft(2, '0');
-    return "$y-$m-$dd";
-  }
+  // String _date(DateTime? d) {
+  //   if (d == null) return "";
+  //   final y = d.year.toString().padLeft(4, '0');
+  //   final m = d.month.toString().padLeft(2, '0');
+  //   final dd = d.day.toString().padLeft(2, '0');
+  //   return "$y-$m-$dd";
+  // }
 
-  ({Color bg, Color fg}) _statusColor(String? s) {
-    if (s == null) return (bg: Colors.transparent, fg: Colors.transparent);
-    final v = s.toLowerCase();
-    if (v == "completed")
-      return (bg: const Color(0xFF3F6B5F), fg: Colors.white);
-    if (v == "partial") return (bg: const Color(0xFFD6A11E), fg: Colors.white);
-    return (bg: const Color(0xFFBFC8C4), fg: Colors.white);
-  }
+  // ({Color bg, Color fg}) _statusColor(String? s) {
+  //   if (s == null) return (bg: Colors.transparent, fg: Colors.transparent);
+  //   final v = s.toLowerCase();
+  //   if (v == "completed")
+  //     return (bg: const Color(0xFF3F6B5F), fg: Colors.white);
+  //   if (v == "partial") return (bg: const Color(0xFFD6A11E), fg: Colors.white);
+  //   return (bg: const Color(0xFFBFC8C4), fg: Colors.white);
+  // }
 
   @override
   Widget build(BuildContext context) {
-    final st = _statusColor(row.status);
+    //final st = _statusColor(row.status);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 14),

@@ -14,7 +14,7 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
-  int _currentIndex = 0;
+  //int _currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {

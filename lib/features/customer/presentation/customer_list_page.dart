@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
-import '../../../app/theme/app_colors.dart';
 import '../../../app/widgets/app_bottom_nav.dart';
 import '../domain/customer_models.dart';
 import '../state/customer_list_controller.dart';
