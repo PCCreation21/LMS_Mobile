@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
 import '../../../app/theme/app_colors.dart';
-
+import '../../../app/widgets/app_bottom_nav.dart';
 import '../state/dashboard_controller.dart';
 import 'widgets/feature_card.dart';
-import 'widgets/recent_payment_tile.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -168,39 +166,10 @@ class _HomePageState extends ConsumerState<HomePage> {
                     title: "Loan Package Management",
                     description: "Configure Loan Packages.",
                     primaryButton: "View Loan Packages",
+                    onPrimaryPressed: () => context.push('/loan-packages'),
                   ),
 
                   const SizedBox(height: 30),
-
-                  const Text(
-                    "Recent Payments",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  const RecentPaymentTile(
-                    name: "Anna Perera",
-                    date: "Apr 24, 2024",
-                    amount: "\$150",
-                    method: "Cash",
-                  ),
-                  const RecentPaymentTile(
-                    name: "Ravi Senanayake",
-                    date: "Apr 24, 2024",
-                    amount: "\$200",
-                    method: "Card",
-                  ),
-                  const RecentPaymentTile(
-                    name: "Kasun Fernando",
-                    date: "Apr 23, 2024",
-                    amount: "\$5,000",
-                    method: "Loan",
-                  ),
                 ],
               ),
             ),
@@ -208,25 +177,9 @@ class _HomePageState extends ConsumerState<HomePage> {
         ],
       ),
 
-      // Bottom Navigation
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() => _currentIndex = index);
-          if (index == 0) {
-            context.go('/home');
-          } else if (index == 1) {
-            context.push('/customers');
-          }
-        },
-        selectedItemColor: AppColors.secondary,
-        unselectedItemColor: Colors.grey,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Dashboard"),
-          BottomNavigationBarItem(icon: Icon(Icons.people), label: "Customers"),
-          BottomNavigationBarItem(icon: Icon(Icons.payment), label: "Payments"),
-          BottomNavigationBarItem(icon: Icon(Icons.more_horiz), label: "More"),
-        ],
+      bottomNavigationBar: const AppBottomNav(
+        currentIndex: 0,
+        pageName: "Dashboard",
       ),
     );
   }

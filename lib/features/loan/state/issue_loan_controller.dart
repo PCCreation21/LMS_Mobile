@@ -121,7 +121,7 @@ class IssueLoanController extends StateNotifier<IssueLoanState> {
     return DateTime(newYear, newMonth, day);
   }
 
-  Future<bool> issueLoan({
+  Future<String?> issueLoan({
     required String nic,
     required double amount,
     required LoanPackageLite pkg,
@@ -135,10 +135,10 @@ class IssueLoanController extends StateNotifier<IssueLoanState> {
       await Future.delayed(const Duration(seconds: 1));
 
       state = state.copyWith(isLoading: false);
-      return true;
+      return "LOAN${DateTime.now().millisecondsSinceEpoch}";
     } catch (e) {
       state = state.copyWith(isLoading: false, error: "Issue loan failed");
-      return false;
+      return null;
     }
   }
 }

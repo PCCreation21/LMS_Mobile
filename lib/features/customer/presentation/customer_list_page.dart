@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/theme/app_colors.dart';
+import '../../../app/widgets/app_bottom_nav.dart';
 import '../domain/customer_models.dart';
 import '../state/customer_list_controller.dart';
 import 'widgets/customer_row_card.dart';
@@ -205,21 +206,9 @@ class _CustomerListPageState extends ConsumerState<CustomerListPage> {
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar: const AppBottomNav(
         currentIndex: 1,
-        selectedItemColor: AppColors.secondary,
-        unselectedItemColor: Colors.grey,
-        type: BottomNavigationBarType.fixed,
-        onTap: (index) {
-          if (index == 0) context.go('/home');
-          if (index == 1) context.go('/customers');
-        },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Dashboard"),
-          BottomNavigationBarItem(icon: Icon(Icons.people), label: "Customers"),
-          BottomNavigationBarItem(icon: Icon(Icons.payment), label: "Payments"),
-          BottomNavigationBarItem(icon: Icon(Icons.more_horiz), label: "More"),
-        ],
+        pageName: "Customer",
       ),
     );
   }

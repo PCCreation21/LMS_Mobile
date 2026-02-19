@@ -10,6 +10,8 @@ import 'package:loan_management_system/features/dashboard/presentation/home_page
 import 'package:loan_management_system/features/loan/presentation/issue_loan_page.dart';
 import 'package:loan_management_system/features/loan/presentation/loan_details_page.dart';
 import 'package:loan_management_system/features/loan/presentation/loan_management_page.dart';
+import 'package:loan_management_system/features/loan_packages/presentation/loan_package_management_page.dart';
+import 'package:loan_management_system/features/receipts/presentation/payment_receipt_page.dart';
 import 'package:loan_management_system/features/route_collection_tracking/presentation/route_collection_tracking_page.dart';
 import 'package:loan_management_system/features/routes/presentation/route_management_page.dart';
 
@@ -77,6 +79,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/routes',
         builder: (context, state) => const RouteManagementPage(),
+      ),
+      GoRoute(
+        path: '/loan-packages',
+        builder: (context, state) => const LoanPackageManagementPage(),
+      ),
+      GoRoute(
+        path: '/receipt/:id',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return PaymentReceiptPage(receiptId: id);
+        },
       ),
     ],
   );

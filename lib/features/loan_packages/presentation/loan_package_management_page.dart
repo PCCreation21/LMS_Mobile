@@ -3,50 +3,46 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/theme/app_colors.dart';
-import '../state/route_collection_controller.dart';
-import 'widgets/route_collection_filters.dart';
-import 'widgets/route_collection_card.dart';
-import 'widgets/route_collection_table.dart';
+import '../state/loan_package_controller.dart';
+import 'widgets/loan_package_filters_bar.dart';
+import 'widgets/loan_package_card.dart';
+import 'widgets/loan_package_table.dart';
 
-class RouteCollectionTrackingPage extends ConsumerWidget {
-  const RouteCollectionTrackingPage({super.key});
+class LoanPackageManagementPage extends ConsumerStatefulWidget {
+  const LoanPackageManagementPage({super.key});
 
-  String _fmtFilterDate(DateTime? d, {required String fallback}) {
-    if (d == null) return fallback;
-    final dd = d.day.toString().padLeft(2, '0');
-    final mm = d.month.toString().padLeft(2, '0');
-    return "$dd/$mm/${d.year}";
+  @override
+  ConsumerState<LoanPackageManagementPage> createState() =>
+      _LoanPackageManagementPageState();
+}
+
+class _LoanPackageManagementPageState
+    extends ConsumerState<LoanPackageManagementPage> {
+  late final TextEditingController _queryCtrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _queryCtrl = TextEditingController();
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(routeCollectionProvider);
-    final controller = ref.read(routeCollectionProvider.notifier);
+  void dispose() {
+    _queryCtrl.dispose();
+    super.dispose();
+  }
 
-    Future<void> pickFrom() async {
-      final now = DateTime.now();
-      final d = await showDatePicker(
-        context: context,
-        firstDate: DateTime(now.year - 10),
-        lastDate: DateTime(now.year + 10),
-        initialDate: state.filters.from ?? now,
+  @override
+  Widget build(BuildContext context) {
+    final state = ref.watch(loanPackageProvider);
+    final controller = ref.read(loanPackageProvider.notifier);
+
+    if (_queryCtrl.text != state.filters.query) {
+      _queryCtrl.text = state.filters.query;
+      _queryCtrl.selection = TextSelection.fromPosition(
+        TextPosition(offset: _queryCtrl.text.length),
       );
-      if (d != null) controller.setFrom(d);
     }
-
-    Future<void> pickTo() async {
-      final now = DateTime.now();
-      final d = await showDatePicker(
-        context: context,
-        firstDate: DateTime(now.year - 10),
-        lastDate: DateTime(now.year + 10),
-        initialDate: state.filters.to ?? now,
-      );
-      if (d != null) controller.setTo(d);
-    }
-
-    final routeDropdownValue = state.filters.routeCode ?? "All";
-    final officerDropdownValue = state.filters.officer ?? "All";
 
     return Scaffold(
       body: Stack(
@@ -57,7 +53,6 @@ class RouteCollectionTrackingPage extends ConsumerWidget {
             width: double.infinity,
             height: double.infinity,
           ),
-
           SafeArea(
             child: LayoutBuilder(
               builder: (context, constraints) {
@@ -66,7 +61,6 @@ class RouteCollectionTrackingPage extends ConsumerWidget {
                 return SingleChildScrollView(
                   padding: const EdgeInsets.all(18),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _HeaderBar(onBack: () => context.pop()),
 
@@ -86,7 +80,7 @@ class RouteCollectionTrackingPage extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              "Route Collection Tracking",
+                              "Loan Package Management",
                               style: TextStyle(
                                 fontSize: 28,
                                 fontWeight: FontWeight.w900,
@@ -94,32 +88,23 @@ class RouteCollectionTrackingPage extends ConsumerWidget {
                             ),
                             const SizedBox(height: 6),
                             Text(
-                              "Monitor retal collections by route and officer",
+                              "Configure loan packages with terms and interest rates",
                               style: TextStyle(
                                 color: Colors.black.withOpacity(0.6),
                               ),
                             ),
+
                             const SizedBox(height: 14),
-                            RouteCollectionFiltersBar(
-                              routeCodes: state.routeCodes,
-                              officers: state.officers,
-                              routeValue: routeDropdownValue,
-                              officerValue: officerDropdownValue,
-                              fromText: _fmtFilterDate(
-                                state.filters.from,
-                                fallback: "From",
-                              ),
-                              toText: _fmtFilterDate(
-                                state.filters.to,
-                                fallback: "To",
-                              ),
-                              onRouteChanged: controller.setRouteCode,
-                              onOfficerChanged: controller.setOfficer,
-                              onPickFrom: pickFrom,
-                              onPickTo: pickTo,
-                              onApply: controller.applyFilter,
-                              onReset: controller.resetFilters,
-                              applyEnabled: !state.loading,
+
+                            LoanPackageFiltersBar(
+                              searchBy: state.filters.searchBy,
+                              onSearchByChanged: controller.setSearchBy,
+                              queryController: _queryCtrl,
+                              onSearch: () {
+                                controller.setQuery(_queryCtrl.text);
+                                controller.search();
+                              },
+                              searchEnabled: !state.loading,
                             ),
 
                             const SizedBox(height: 16),
@@ -132,12 +117,10 @@ class RouteCollectionTrackingPage extends ConsumerWidget {
                                 ),
                               )
                             else if (state.error != null)
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 20,
-                                ),
+                              const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 20),
                                 child: Center(
-                                  child: Text("Error loading records"),
+                                  child: Text("Error loading packages"),
                                 ),
                               )
                             else if (state.rows.isEmpty)
@@ -148,7 +131,7 @@ class RouteCollectionTrackingPage extends ConsumerWidget {
                                 child: Column(
                                   children: [
                                     const Text(
-                                      "No Collection Records Found",
+                                      "No Records Found",
                                       style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.w900,
@@ -156,21 +139,70 @@ class RouteCollectionTrackingPage extends ConsumerWidget {
                                     ),
                                     const SizedBox(height: 6),
                                     Text(
-                                      "Adjust filters to view route collections.",
+                                      "Search by Package Code to view matching packages.",
                                       style: TextStyle(
                                         color: Colors.black.withOpacity(0.6),
                                       ),
+                                      textAlign: TextAlign.center,
                                     ),
                                   ],
                                 ),
                               )
                             else
                               isDesktop
-                                  ? RouteCollectionTable(rows: state.rows)
+                                  ? LoanPackageTable(
+                                      rows: state.rows,
+                                      onEdit: (p) {
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              "Edit ${p.packageCode}",
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      onDelete: (p) {
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              "Delete ${p.packageCode}",
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    )
                                   : Column(
                                       children: state.rows
                                           .map(
-                                            (r) => RouteCollectionCard(row: r),
+                                            (p) => LoanPackageCard(
+                                              row: p,
+                                              onEdit: () {
+                                                ScaffoldMessenger.of(
+                                                  context,
+                                                ).showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(
+                                                      "Edit ${p.packageCode}",
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                              onDelete: () {
+                                                ScaffoldMessenger.of(
+                                                  context,
+                                                ).showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(
+                                                      "Delete ${p.packageCode}",
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                            ),
                                           )
                                           .toList(),
                                     ),
@@ -186,7 +218,7 @@ class RouteCollectionTrackingPage extends ConsumerWidget {
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 3,
+        currentIndex: 5,
         selectedItemColor: AppColors.secondary,
         unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,
@@ -194,17 +226,26 @@ class RouteCollectionTrackingPage extends ConsumerWidget {
           if (index == 0) context.go('/home');
           if (index == 1) context.push('/customers');
           if (index == 2) context.push('/loans');
-          if (index == 3) context.go('/route-collections');
+          if (index == 3) context.push('/route-collections');
           if (index == 4) context.push('/routes');
-          if (index == 5) context.push('/loan-packages');
+          if (index == 5) context.go('/loan-packages');
         },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Dashboard"),
           BottomNavigationBarItem(icon: Icon(Icons.people), label: "Customer"),
-          BottomNavigationBarItem(icon: Icon(Icons.attach_money), label: "Loan"),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.attach_money),
+            label: "Loan",
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.wallet), label: "Wallet"),
-          BottomNavigationBarItem(icon: Icon(Icons.location_on), label: "Route"),
-          BottomNavigationBarItem(icon: Icon(Icons.card_giftcard), label: "Packages"),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.location_on),
+            label: "Route",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.card_giftcard),
+            label: "Packages",
+          ),
         ],
       ),
     );

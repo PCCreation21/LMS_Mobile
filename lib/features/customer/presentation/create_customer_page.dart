@@ -349,12 +349,18 @@ class _CreateCustomerPageState extends ConsumerState<CreateCustomerPage> {
         onTap: (index) {
           if (index == 0) context.go('/home');
           if (index == 1) context.go('/customers');
+          if (index == 2) context.push('/loans');
+          if (index == 3) context.push('/route-collections');
+          if (index == 4) context.push('/routes');
+          if (index == 5) context.push('/loan-packages');
         },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Dashboard"),
-          BottomNavigationBarItem(icon: Icon(Icons.people), label: "Customers"),
-          BottomNavigationBarItem(icon: Icon(Icons.payment), label: "Payments"),
-          BottomNavigationBarItem(icon: Icon(Icons.more_horiz), label: "More"),
+          BottomNavigationBarItem(icon: Icon(Icons.people), label: "Customer"),
+          BottomNavigationBarItem(icon: Icon(Icons.attach_money), label: "Loan"),
+          BottomNavigationBarItem(icon: Icon(Icons.wallet), label: "Wallet"),
+          BottomNavigationBarItem(icon: Icon(Icons.location_on), label: "Route"),
+          BottomNavigationBarItem(icon: Icon(Icons.card_giftcard), label: "Packages"),
         ],
       ),
     );
