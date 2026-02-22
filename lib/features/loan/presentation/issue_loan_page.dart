@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/theme/app_colors.dart';
+import '../../../app/widgets/app_bottom_nav.dart';
 import '../../../app/widgets/app_dropdown_field.dart';
 import '../../../app/widgets/app_text_field.dart';
 import '../../../core/utils/validators.dart';
@@ -497,36 +498,9 @@ class _IssueLoanPageState extends ConsumerState<IssueLoanPage> {
         ],
       ),
 
-      bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar: const AppBottomNav(
         currentIndex: 2,
-        selectedItemColor: AppColors.secondary,
-        unselectedItemColor: Colors.grey,
-        type: BottomNavigationBarType.fixed,
-        onTap: (index) {
-          if (index == 0) context.go('/home');
-          if (index == 1) context.push('/customers');
-          if (index == 2) context.go('/loans');
-          if (index == 3) context.push('/route-collections');
-          if (index == 4) context.push('/routes');
-          if (index == 5) context.push('/loan-packages');
-        },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Dashboard"),
-          BottomNavigationBarItem(icon: Icon(Icons.people), label: "Customer"),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.attach_money),
-            label: "Loan",
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.wallet), label: "Wallet"),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.location_on),
-            label: "Route",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.card_giftcard),
-            label: "Packages",
-          ),
-        ],
+        pageName: "Loan",
       ),
     );
   }

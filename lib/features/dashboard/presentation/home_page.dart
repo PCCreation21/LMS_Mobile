@@ -145,6 +145,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                     description: "Track rental payments.",
                     primaryButton: "Rental Payment View",
                     secondaryButton: "Route Collection Tracking",
+                    onPrimaryPressed: () => context.push('/rental-payment'),
                     onSecondaryPressed: () =>
                         context.push('/route-collections'),
                   ),
