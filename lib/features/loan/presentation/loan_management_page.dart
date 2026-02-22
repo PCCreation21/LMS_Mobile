@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../app/theme/app_colors.dart';
 import '../../../app/widgets/app_bottom_nav.dart';
 
 import '../state/loan_management_controller.dart';
@@ -41,83 +40,88 @@ class _LoanManagementPageState extends ConsumerState<LoanManagementPage> {
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.all(18),
                     child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.78),
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: Colors.white.withOpacity(0.55)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "Loan Management",
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.w900,
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.78),
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.55),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      "View and manage all loans in the system",
-                      style: TextStyle(color: Colors.black.withOpacity(0.6)),
-                    ),
-                    const SizedBox(height: 14),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Loan Management",
+                            style: TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            "View and manage all loans in the system",
+                            style: TextStyle(
+                              color: Colors.black.withOpacity(0.6),
+                            ),
+                          ),
+                          const SizedBox(height: 14),
 
-                    /// ✅ Filters Bar: Status + Routes + Advanced Filter + View button
-                    LoanFiltersBar(
-                      status: state.status,
-                      onStatusChanged: controller.setStatus,
+                          /// ✅ Filters Bar: Status + Routes + Advanced Filter + View button
+                          LoanFiltersBar(
+                            status: state.status,
+                            onStatusChanged: controller.setStatus,
 
-                      // ✅ Routes support
-                      routes: state.routes, // e.g. ["All Routes","R001","R002"]
-                      selectedRoute:
-                          state.selectedRoute, // null means All Routes
-                      onRouteChanged: controller.setRoute,
+                            // ✅ Routes support
+                            routes: state
+                                .routes, // e.g. ["All Routes","R001","R002"]
+                            selectedRoute:
+                                state.selectedRoute, // null means All Routes
+                            onRouteChanged: controller.setRoute,
 
-                      // ✅ Side filter like screenshot
-                      onAdvanceFilterTap: () async {
-                        final res = await showAdvanceFilterSideSheet(
-                          context: context,
-                          initial: state.filters,
-                        );
+                            // ✅ Side filter like screenshot
+                            onAdvanceFilterTap: () async {
+                              final res = await showAdvanceFilterSideSheet(
+                                context: context,
+                                initial: state.filters,
+                              );
 
-                        if (res != null) {
-                          controller.applyFilters(res);
+                              if (res != null) {
+                                controller.applyFilters(res);
 
-                          // Optional:
-                          // If you want to refresh immediately after Save, uncomment:
-                          await controller.load();
-                        }
-                      },
+                                // Optional:
+                                // If you want to refresh immediately after Save, uncomment:
+                                await controller.load();
+                              }
+                            },
 
-                      // ✅ "View" applies selected status + route + filters
-                      onViewTap: controller.load,
-                      viewEnabled: !state.loading,
-                    ),
+                            // ✅ "View" applies selected status + route + filters
+                            onViewTap: controller.load,
+                            viewEnabled: !state.loading,
+                          ),
 
-                    const SizedBox(height: 16),
+                          const SizedBox(height: 16),
 
-                    if (state.loading)
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 30),
-                        child: Center(child: CircularProgressIndicator()),
-                      )
-                    else if (state.error != null)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 20),
-                        child: Center(child: Text("Error")),
-                      )
-                    else
-                      LoanTable(
-                        rows: state.rows,
-                        onRowTap: (row) {
-                          context.push('/loans/${row.loanId}');
-                        },
+                          if (state.loading)
+                            const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 30),
+                              child: Center(child: CircularProgressIndicator()),
+                            )
+                          else if (state.error != null)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 20),
+                              child: Center(child: Text("Error")),
+                            )
+                          else
+                            LoanTable(
+                              rows: state.rows,
+                              onRowTap: (row) {
+                                context.push('/loans/${row.loanId}');
+                              },
+                            ),
+                        ],
                       ),
-                  ],
-                ),
                     ),
                   ),
                 ),

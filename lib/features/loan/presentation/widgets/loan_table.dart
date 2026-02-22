@@ -115,78 +115,78 @@ class _RowItem extends StatelessWidget {
   }
 }
 
-class _Chip extends StatelessWidget {
-  const _Chip({required this.text});
-  final String text;
+// class _Chip extends StatelessWidget {
+//   const _Chip({required this.text});
+//   final String text;
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: const Color(0xFFDDE7E2),
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: Text(
-        text,
-        overflow: TextOverflow.ellipsis,
-        style: const TextStyle(
-          fontWeight: FontWeight.w800,
-          color: Color(0xFF1F5B49),
-        ),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+//       decoration: BoxDecoration(
+//         color: const Color(0xFFDDE7E2),
+//         borderRadius: BorderRadius.circular(14),
+//       ),
+//       child: Text(
+//         text,
+//         overflow: TextOverflow.ellipsis,
+//         style: const TextStyle(
+//           fontWeight: FontWeight.w800,
+//           color: Color(0xFF1F5B49),
+//         ),
+//       ),
+//     );
+//   }
+// }
 
-class _StatusBadge extends StatelessWidget {
-  const _StatusBadge({required this.status});
-  final LoanStatus status;
+// class _StatusBadge extends StatelessWidget {
+//   const _StatusBadge({required this.status});
+//   final LoanStatus status;
 
-  @override
-  Widget build(BuildContext context) {
-    String t;
-    Color bg;
-    Color fg;
+//   @override
+//   Widget build(BuildContext context) {
+//     String t;
+//     Color bg;
+//     Color fg;
 
-    switch (status) {
-      case LoanStatus.open:
-        t = "Open";
-        bg = const Color(0xFFDDE7E2);
-        fg = const Color(0xFF1F5B49);
-        break;
-      case LoanStatus.arrears:
-        t = "Arrears";
-        bg = const Color(0xFFFFE0E0);
-        fg = const Color(0xFFD12B2B);
-        break;
-      case LoanStatus.completed:
-        t = "Completed";
-        bg = const Color(0xFFEADDCB);
-        fg = Colors.black.withOpacity(0.55);
-        break;
-      case LoanStatus.closed:
-        t = "Closed";
-        bg = Colors.grey.withOpacity(0.2);
-        fg = Colors.black.withOpacity(0.6);
-        break;
-      case LoanStatus.all:
-        t = "All";
-        bg = Colors.black.withOpacity(0.08);
-        fg = Colors.black.withOpacity(0.7);
-        break;
-    }
+//     switch (status) {
+//       case LoanStatus.open:
+//         t = "Open";
+//         bg = const Color(0xFFDDE7E2);
+//         fg = const Color(0xFF1F5B49);
+//         break;
+//       case LoanStatus.arrears:
+//         t = "Arrears";
+//         bg = const Color(0xFFFFE0E0);
+//         fg = const Color(0xFFD12B2B);
+//         break;
+//       case LoanStatus.completed:
+//         t = "Completed";
+//         bg = const Color(0xFFEADDCB);
+//         fg = Colors.black.withOpacity(0.55);
+//         break;
+//       case LoanStatus.closed:
+//         t = "Closed";
+//         bg = Colors.grey.withOpacity(0.2);
+//         fg = Colors.black.withOpacity(0.6);
+//         break;
+//       case LoanStatus.all:
+//         t = "All";
+//         bg = Colors.black.withOpacity(0.08);
+//         fg = Colors.black.withOpacity(0.7);
+//         break;
+//     }
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(
-        t,
-        style: TextStyle(fontWeight: FontWeight.w800, fontSize: 12, color: fg),
-      ),
-    );
-  }
-}
+//     return Container(
+//       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+//       decoration: BoxDecoration(
+//         color: bg,
+//         borderRadius: BorderRadius.circular(999),
+//       ),
+//       child: Text(
+//         t,
+//         style: TextStyle(fontWeight: FontWeight.w800, fontSize: 12, color: fg),
+//       ),
+//     );
+//   }
+// }
