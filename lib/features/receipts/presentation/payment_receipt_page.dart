@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -60,6 +59,10 @@ class PaymentReceiptPage extends ConsumerWidget {
 
   Future<void> _generateAndSharePdf(dynamic data, PdfPageFormat format) async {
     final pdf = pw.Document();
+    final is58mm = format == PdfPageFormat.roll57;
+    final fontSize = is58mm ? 7.0 : 10.0;
+    final titleSize = is58mm ? 10.0 : 14.0;
+    final headerSize = is58mm ? 12.0 : 18.0;
 
     pdf.addPage(
       pw.Page(
@@ -73,18 +76,18 @@ class PaymentReceiptPage extends ConsumerWidget {
                   pw.Text(
                     data.companyName,
                     style: pw.TextStyle(
-                      fontSize: 18,
+                      fontSize: headerSize,
                       fontWeight: pw.FontWeight.bold,
                     ),
                   ),
                   pw.Text(
                     data.subtitle,
-                    style: const pw.TextStyle(fontSize: 12),
+                    style: pw.TextStyle(fontSize: fontSize + 1),
                   ),
-                  pw.SizedBox(height: 4),
+                  pw.SizedBox(height: 2),
                   pw.Text(
                     "Tel: ${data.tel}",
-                    style: const pw.TextStyle(fontSize: 10),
+                    style: pw.TextStyle(fontSize: fontSize),
                   ),
                 ],
               ),
@@ -94,48 +97,49 @@ class PaymentReceiptPage extends ConsumerWidget {
               child: pw.Text(
                 data.receiptTitle,
                 style: pw.TextStyle(
-                  fontSize: 14,
+                  fontSize: titleSize,
                   fontWeight: pw.FontWeight.bold,
                 ),
               ),
             ),
             pw.Divider(),
-            _pdfRow("Loan Number:", data.loanNo),
-            _pdfRow("Customer Name:", data.customerName),
-            _pdfRow("Loan Code:", data.loanCode),
+            _pdfRow("Loan Number:", data.loanNo, fontSize),
+            _pdfRow("Customer Name:", data.customerName, fontSize),
+            _pdfRow("Loan Code:", data.loanCode, fontSize),
             pw.Divider(),
-            _pdfRow("Loan Amount:", _money(data.loanAmount)),
-            _pdfRow("Start Date:", _ymd(data.startDate)),
-            _pdfRow("End Date:", _ymd(data.endDate)),
-            _pdfRow("Duration:", "${data.durationDays} days"),
+            _pdfRow("Loan Amount:", _money(data.loanAmount), fontSize),
+            _pdfRow("Start Date:", _ymd(data.startDate), fontSize),
+            _pdfRow("End Date:", _ymd(data.endDate), fontSize),
+            _pdfRow("Duration:", "${data.durationDays} days", fontSize),
             pw.Divider(),
-            _pdfRow("Route:", data.route),
+            _pdfRow("Route:", data.route, fontSize),
             _pdfRow(
               "Bill Date:",
               "${_ymd(data.billDateTime)} ${_time(data.billDateTime)}",
+              fontSize,
             ),
-            _pdfRow("Last Paid Date:", _ymd(data.lastPaidDate)),
+            _pdfRow("Last Paid Date:", _ymd(data.lastPaidDate), fontSize),
             pw.Divider(),
-            _pdfRow("Rental:", _money(data.rental)),
-            _pdfRow("Total Paid Amount:", _money(data.totalPaid)),
-            _pdfRow("Due to Paid:", _money(data.totalDue)),
-            _pdfRow("Today Paid:", _money(data.todayPaid)),
-            _pdfRow("Brought Forward:", _money(data.broughtForward)),
-            _pdfRow("Arrears Amount:", _money(data.arrears)),
-            _pdfRow("Closing Balance:", _money(data.closingBalance)),
+            _pdfRow("Rental:", _money(data.rental), fontSize),
+            _pdfRow("Total Paid Amount:", _money(data.totalPaid), fontSize),
+            _pdfRow("Due to Paid:", _money(data.totalDue), fontSize),
+            _pdfRow("Today Paid:", _money(data.todayPaid), fontSize),
+            _pdfRow("Brought Forward:", _money(data.broughtForward), fontSize),
+            _pdfRow("Arrears Amount:", _money(data.arrears), fontSize),
+            _pdfRow("Closing Balance:", _money(data.closingBalance), fontSize),
             pw.Divider(),
             pw.Center(
               child: pw.Text(
                 "${_ymd(data.billDateTime)}  |  ${_time(data.billDateTime)}",
-                style: const pw.TextStyle(fontSize: 10),
+                style: pw.TextStyle(fontSize: fontSize),
               ),
             ),
-            pw.SizedBox(height: 8),
+            pw.SizedBox(height: 4),
             pw.Center(
               child: pw.Text(
                 "Thank you for your payment!",
                 style: pw.TextStyle(
-                  fontSize: 12,
+                  fontSize: fontSize + 1,
                   fontWeight: pw.FontWeight.bold,
                 ),
               ),
@@ -143,7 +147,7 @@ class PaymentReceiptPage extends ConsumerWidget {
             pw.Center(
               child: pw.Text(
                 "Please keep this receipt for your records.",
-                style: const pw.TextStyle(fontSize: 10),
+                style: pw.TextStyle(fontSize: fontSize),
               ),
             ),
           ],
@@ -155,23 +159,25 @@ class PaymentReceiptPage extends ConsumerWidget {
     final dir = await getTemporaryDirectory();
     final file = File('${dir.path}/receipt_${data.loanNo}.pdf');
     await file.writeAsBytes(bytes);
-    
-    await Share.shareXFiles(
-      [XFile(file.path)],
-      text: 'Payment Receipt - ${data.loanNo}',
-    );
+
+    await Share.shareXFiles([
+      XFile(file.path),
+    ], text: 'Payment Receipt - ${data.loanNo}');
   }
 
-  pw.Widget _pdfRow(String label, String value) {
+  pw.Widget _pdfRow(String label, String value, double fontSize) {
     return pw.Padding(
-      padding: const pw.EdgeInsets.symmetric(vertical: 2),
+      padding: const pw.EdgeInsets.symmetric(vertical: 1),
       child: pw.Row(
         mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
         children: [
-          pw.Text(label, style: const pw.TextStyle(fontSize: 10)),
+          pw.Text(label, style: pw.TextStyle(fontSize: fontSize)),
           pw.Text(
             value,
-            style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold),
+            style: pw.TextStyle(
+              fontSize: fontSize,
+              fontWeight: pw.FontWeight.bold,
+            ),
           ),
         ],
       ),
@@ -448,19 +454,6 @@ class _ReceiptBody extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               "Please keep this receipt for your records.",
-              style: TextStyle(
-                color: Colors.black.withOpacity(0.60),
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-
-            const SizedBox(height: 14),
-
-            // QR
-            QrImageView(data: data.qrValue, size: 160),
-            const SizedBox(height: 10),
-            Text(
-              "Scan QR to Get Loan Details",
               style: TextStyle(
                 color: Colors.black.withOpacity(0.60),
                 fontWeight: FontWeight.w700,

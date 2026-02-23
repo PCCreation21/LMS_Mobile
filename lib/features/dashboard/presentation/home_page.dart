@@ -59,13 +59,6 @@ class _HomePageState extends ConsumerState<HomePage> {
                       ),
                       Row(
                         children: [
-                          const CircleAvatar(
-                            radius: 20,
-                            backgroundImage: AssetImage(
-                              'assets/images/logo.png',
-                            ),
-                          ),
-                          const SizedBox(width: 8),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [

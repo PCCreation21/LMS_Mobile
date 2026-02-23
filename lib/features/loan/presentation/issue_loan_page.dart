@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../app/widgets/app_bottom_nav.dart';
+import '../../../app/widgets/app_header_bar.dart';
 import '../../../app/widgets/app_dropdown_field.dart';
 import '../../../app/widgets/app_text_field.dart';
 import '../../../core/utils/validators.dart';
@@ -70,7 +71,7 @@ class _IssueLoanPageState extends ConsumerState<IssueLoanPage> {
           SafeArea(
             child: Column(
               children: [
-                _HeaderBar(onBack: () => context.pop()),
+                AppHeaderBar(onBack: () => context.pop()),
                 Expanded(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.all(18),
@@ -503,89 +504,3 @@ class _IssueLoanPageState extends ConsumerState<IssueLoanPage> {
     );
   }
 }
-
-class _HeaderBar extends StatelessWidget {
-  const _HeaderBar({required this.onBack});
-  final VoidCallback onBack;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-      child: Row(
-        children: [
-          IconButton(
-            onPressed: onBack,
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
-          ),
-          const Spacer(),
-          Row(
-            children: [
-              Image.asset('assets/images/logo.png', height: 26),
-              const SizedBox(width: 10),
-              const Text(
-                "GOLDEN CASH",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 1.0,
-                ),
-              ),
-            ],
-          ),
-          const Spacer(),
-          const CircleAvatar(radius: 18, backgroundColor: Colors.white24),
-        ],
-      ),
-    );
-  }
-}
-
-// class _DateField extends StatelessWidget {
-//   const _DateField({
-//     required this.label,
-//     required this.value,
-//     this.onTap,
-//     this.helperText,
-//     this.errorText,
-//   });
-
-//   final String label;
-//   final String value;
-//   final VoidCallback? onTap;
-//   final String? helperText;
-//   final String? errorText;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final enabled = onTap != null;
-
-//     return Column(
-//       crossAxisAlignment: CrossAxisAlignment.start,
-//       mainAxisSize: MainAxisSize.min,
-//       children: [
-//         Text(label, style: Theme.of(context).textTheme.labelLarge),
-//         const SizedBox(height: 8),
-//         InkWell(
-//           onTap: onTap,
-//           child: InputDecorator(
-//             decoration: InputDecoration(
-//               suffixIcon: enabled ? const Icon(Icons.calendar_month) : null,
-//               errorText: errorText,
-//               helperText: helperText,
-//               helperMaxLines: 2,
-//             ),
-//             child: Text(
-//               value,
-//               style: TextStyle(
-//                 color: value == "dd/mm/yyyy"
-//                     ? Colors.black.withOpacity(0.45)
-//                     : Colors.black,
-//               ),
-//             ),
-//           ),
-//         ),
-//       ],
-//     );
-//   }
-// }

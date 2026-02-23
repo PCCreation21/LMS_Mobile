@@ -185,23 +185,26 @@ class _HeaderBar extends StatelessWidget {
             onPressed: onBack,
             icon: const Icon(Icons.arrow_back, color: Colors.white),
           ),
-          const Spacer(),
-          Row(
-            children: [
-              Image.asset('assets/images/logo.png', height: 26),
-              const SizedBox(width: 10),
-              const Text(
-                "GOLDEN CASH",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 1.0,
-                ),
+          Expanded(
+            child: Center(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Image.asset('assets/images/logo.png', height: 26),
+                  const SizedBox(width: 10),
+                  const Text(
+                    "GOLDEN CASH",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1.0,
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-          const Spacer(),
-          const CircleAvatar(radius: 18, backgroundColor: Colors.white24),
+          const SizedBox(width: 48),
         ],
       ),
     );

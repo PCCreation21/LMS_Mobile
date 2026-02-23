@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../app/widgets/app_bottom_nav.dart';
+import '../../../app/widgets/app_header_bar.dart';
 
 import '../state/loan_management_controller.dart';
 
@@ -35,7 +36,7 @@ class _LoanManagementPageState extends ConsumerState<LoanManagementPage> {
           SafeArea(
             child: Column(
               children: [
-                _HeaderBar(onBack: () => context.pop()),
+                AppHeaderBar(onBack: () => context.pop()),
                 Expanded(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.all(18),
@@ -133,43 +134,6 @@ class _LoanManagementPageState extends ConsumerState<LoanManagementPage> {
       bottomNavigationBar: const AppBottomNav(
         currentIndex: 2,
         pageName: "Loan",
-      ),
-    );
-  }
-}
-
-class _HeaderBar extends StatelessWidget {
-  const _HeaderBar({required this.onBack});
-  final VoidCallback onBack;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-      child: Row(
-        children: [
-          IconButton(
-            onPressed: onBack,
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
-          ),
-          const Spacer(),
-          Row(
-            children: [
-              Image.asset('assets/images/logo.png', height: 26),
-              const SizedBox(width: 10),
-              const Text(
-                "GOLDEN CASH",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 1.0,
-                ),
-              ),
-            ],
-          ),
-          const Spacer(),
-          const CircleAvatar(radius: 18, backgroundColor: Colors.white24),
-        ],
       ),
     );
   }

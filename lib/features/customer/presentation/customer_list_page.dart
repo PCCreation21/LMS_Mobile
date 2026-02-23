@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../app/widgets/app_bottom_nav.dart';
+import '../../../app/widgets/app_header_bar.dart';
+import '../../../app/widgets/glass_card.dart';
 import '../domain/customer_models.dart';
 import '../state/customer_list_controller.dart';
 import 'widgets/customer_row_card.dart';
@@ -37,12 +39,12 @@ class _CustomerListPageState extends ConsumerState<CustomerListPage> {
           SafeArea(
             child: Column(
               children: [
-                _HeaderBar(onBack: () => context.pop()),
+                AppHeaderBar(onBack: () => context.pop()),
 
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-                    child: _GlassCard(
+                    child: GlassCard(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -231,67 +233,6 @@ class _CustomerListPageState extends ConsumerState<CustomerListPage> {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _HeaderBar extends StatelessWidget {
-  const _HeaderBar({required this.onBack});
-  final VoidCallback onBack;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-      child: Row(
-        children: [
-          IconButton(
-            onPressed: onBack,
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
-          ),
-          const Spacer(),
-          Row(
-            children: [
-              Image.asset('assets/images/logo.png', height: 26),
-              const SizedBox(width: 10),
-              const Text(
-                "GOLDEN CASH",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 1.0,
-                ),
-              ),
-            ],
-          ),
-          const Spacer(),
-          const CircleAvatar(radius: 18, backgroundColor: Colors.white24),
-        ],
-      ),
-    );
-  }
-}
-
-class _GlassCard extends StatelessWidget {
-  const _GlassCard({required this.child});
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 18, 16, 12),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.90),
-        borderRadius: BorderRadius.circular(22),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.12),
-            blurRadius: 22,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: child,
     );
   }
 }
