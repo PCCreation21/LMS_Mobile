@@ -15,14 +15,17 @@ class NewPasswordPage extends ConsumerStatefulWidget {
 
 class _NewPasswordPageState extends ConsumerState<NewPasswordPage> {
   final _formKey = GlobalKey<FormState>();
+  final _currentPwCtrl = TextEditingController();
   final _newPwCtrl = TextEditingController();
   final _confirmPwCtrl = TextEditingController();
 
   bool _obscure1 = true;
   bool _obscure2 = true;
+  bool _obscure3 = true;
 
   @override
   void dispose() {
+    _currentPwCtrl.dispose();
     _newPwCtrl.dispose();
     _confirmPwCtrl.dispose();
     super.dispose();
@@ -33,17 +36,26 @@ class _NewPasswordPageState extends ConsumerState<NewPasswordPage> {
 
     if (!_formKey.currentState!.validate()) return;
 
-    final success = await ref
-        .read(authControllerProvider.notifier)
-        .resetPassword(newPassword: _newPwCtrl.text);
+    final success = await ref.read(authControllerProvider.notifier).changePassword(
+      currentPassword: _currentPwCtrl.text,
+      newPassword: _newPwCtrl.text,
+      confirmNewPassword: _confirmPwCtrl.text,
+    );
 
     if (!mounted) return;
 
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Password reset successful")),
+        const SnackBar(content: Text("Password changed successfully")),
       );
       context.go('/login');
+    } else {
+      final err = ref.read(authControllerProvider).error;
+      if (err != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(err)),
+        );
+      }
     }
   }
 
@@ -64,9 +76,7 @@ class _NewPasswordPageState extends ConsumerState<NewPasswordPage> {
               child: Column(
                 children: [
                   const SizedBox(height: 40),
-
                   const AppLogo(size: 110, showText: false),
-
                   const SizedBox(height: 14),
 
                   const Text(
@@ -98,7 +108,7 @@ class _NewPasswordPageState extends ConsumerState<NewPasswordPage> {
                       child: Column(
                         children: [
                           const Text(
-                            "New Password",
+                            "Change Password",
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.w700,
@@ -109,7 +119,7 @@ class _NewPasswordPageState extends ConsumerState<NewPasswordPage> {
                           const SizedBox(height: 12),
 
                           const Text(
-                            "Set a new password for your account.",
+                            "Enter your current password and set a new password.",
                             style: TextStyle(
                               fontSize: 14,
                               color: Color(0xFF5B6B63),
@@ -118,32 +128,41 @@ class _NewPasswordPageState extends ConsumerState<NewPasswordPage> {
 
                           const SizedBox(height: 18),
 
-                          // New Password
                           TextFormField(
-                            controller: _newPwCtrl,
+                            controller: _currentPwCtrl,
                             obscureText: _obscure1,
-                            validator: Validators.strongPassword,
+                            validator: Validators.min8Password,
                             decoration: InputDecoration(
-                              hintText: "New Password",
+                              hintText: "Current Password",
                               prefixIcon: const Icon(Icons.lock_outline),
                               suffixIcon: IconButton(
-                                icon: Icon(
-                                  _obscure1
-                                      ? Icons.visibility_off
-                                      : Icons.visibility,
-                                ),
-                                onPressed: () =>
-                                    setState(() => _obscure1 = !_obscure1),
+                                icon: Icon(_obscure1 ? Icons.visibility_off : Icons.visibility),
+                                onPressed: () => setState(() => _obscure1 = !_obscure1),
                               ),
                             ),
                           ),
 
                           const SizedBox(height: 12),
 
-                          // Confirm Password
+                          TextFormField(
+                            controller: _newPwCtrl,
+                            obscureText: _obscure2,
+                            validator: Validators.strongPassword,
+                            decoration: InputDecoration(
+                              hintText: "New Password",
+                              prefixIcon: const Icon(Icons.lock_outline),
+                              suffixIcon: IconButton(
+                                icon: Icon(_obscure2 ? Icons.visibility_off : Icons.visibility),
+                                onPressed: () => setState(() => _obscure2 = !_obscure2),
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 12),
+
                           TextFormField(
                             controller: _confirmPwCtrl,
-                            obscureText: _obscure2,
+                            obscureText: _obscure3,
                             validator: (v) {
                               if (v == null || v.isEmpty) {
                                 return "Confirm password is required";
@@ -157,13 +176,8 @@ class _NewPasswordPageState extends ConsumerState<NewPasswordPage> {
                               hintText: "Confirm Password",
                               prefixIcon: const Icon(Icons.lock_outline),
                               suffixIcon: IconButton(
-                                icon: Icon(
-                                  _obscure2
-                                      ? Icons.visibility_off
-                                      : Icons.visibility,
-                                ),
-                                onPressed: () =>
-                                    setState(() => _obscure2 = !_obscure2),
+                                icon: Icon(_obscure3 ? Icons.visibility_off : Icons.visibility),
+                                onPressed: () => setState(() => _obscure3 = !_obscure3),
                               ),
                             ),
                           ),
@@ -192,7 +206,7 @@ class _NewPasswordPageState extends ConsumerState<NewPasswordPage> {
                                       ),
                                     )
                                   : const Text(
-                                      "Reset Password",
+                                      "Change Password",
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w700,
@@ -246,6 +260,7 @@ class _NewPasswordPageState extends ConsumerState<NewPasswordPage> {
 
 class _GlassCard extends StatelessWidget {
   const _GlassCard({required this.child});
+
   final Widget child;
 
   @override

@@ -42,4 +42,37 @@ class LoanRowModel {
     required this.arrears,
     required this.status,
   });
+
+  factory LoanRowModel.fromJson(Map<String, dynamic> json) {
+    final statusStr = (json['status'] ?? '').toString().toUpperCase();
+    LoanStatus status;
+    switch (statusStr) {
+      case 'OPEN':
+        status = LoanStatus.open;
+        break;
+      case 'ARREARS':
+        status = LoanStatus.arrears;
+        break;
+      case 'COMPLETED':
+        status = LoanStatus.completed;
+        break;
+      case 'CLOSED':
+        status = LoanStatus.closed;
+        break;
+      default:
+        status = LoanStatus.open;
+    }
+
+    final arrears = (json['arrears'] as num?)?.toDouble() ?? 0.0;
+    final arrearsStr = arrears > 0 ? 'LKR ${arrears.toStringAsFixed(2)}' : '-';
+
+    return LoanRowModel(
+      loanId: json['id']?.toString() ?? '',
+      loanNo: json['loanNumber'] ?? '',
+      customer: json['customerName'] ?? '',
+      packageCode: json['packageCode'] ?? '',
+      arrears: arrearsStr,
+      status: status,
+    );
+  }
 }

@@ -392,7 +392,7 @@ class _ReceiptBody extends StatelessWidget {
             ),
             KvRow(
               label: "Duration:",
-              value: "${data.durationDays}",
+              value: "${data.durationDays} days",
               boldValue: false,
             ),
 

@@ -6,6 +6,7 @@ import '../../../app/widgets/app_dropdown_field.dart';
 import '../../../core/utils/validators.dart';
 import '../domain/customer_models.dart';
 import '../state/create_customer_controller.dart';
+import '../state/customer_list_controller.dart';
 
 class CreateCustomerPage extends ConsumerStatefulWidget {
   const CreateCustomerPage({super.key});
@@ -84,7 +85,8 @@ class _CreateCustomerPageState extends ConsumerState<CreateCustomerPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Customer created successfully")),
       );
-      context.pop(); // go back
+      ref.invalidate(customerListProvider);
+      context.go('/customers');
     } else {
       final err = ref.read(createCustomerControllerProvider).error;
       if (err != null) {

@@ -122,15 +122,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
                           const SizedBox(height: 18),
 
-                          // Email
+                          // Username
                           TextFormField(
                             controller: _emailCtrl,
-                            keyboardType: TextInputType.emailAddress,
+                            keyboardType: TextInputType.text,
                             validator: (v) =>
-                                Validators.requiredField(v, name: "Email"),
+                                Validators.requiredField(v, name: "Username"),
                             decoration: const InputDecoration(
-                              hintText: "Email",
-                              prefixIcon: Icon(Icons.email_outlined),
+                              hintText: "Username",
+                              prefixIcon: Icon(Icons.person_outline),
                             ),
                           ),
 
@@ -157,23 +157,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           ),
 
                           const SizedBox(height: 10),
-
-                          // Forgot password
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: TextButton(
-                              onPressed: () => context.push('/forgot-password'),
-                              child: const Text(
-                                "Forgot password?",
-                                style: TextStyle(
-                                  color: Color(0xFF2F4A3D),
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(height: 6),
+                          const SizedBox(height: 20),
 
                           // Sign In button
                           SizedBox(

@@ -7,13 +7,13 @@ class CustomerRowCard extends StatelessWidget {
     required this.customer,
     required this.onTapNic,
     required this.onEdit,
-    required this.onDelete,
+    this.onDelete,
   });
 
   final Customer customer;
   final VoidCallback onTapNic;
   final VoidCallback onEdit;
-  final VoidCallback onDelete;
+  final VoidCallback? onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -76,24 +76,10 @@ class CustomerRowCard extends StatelessWidget {
                     : const Color(0xFF2F4A3D),
               ),
               const SizedBox(height: 8),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    visualDensity: VisualDensity.compact,
-                    icon: const Icon(Icons.edit, size: 20),
-                    onPressed: onEdit,
-                  ),
-                  IconButton(
-                    visualDensity: VisualDensity.compact,
-                    icon: const Icon(
-                      Icons.delete_outline,
-                      size: 20,
-                      color: Color(0xFFDC2626),
-                    ),
-                    onPressed: onDelete,
-                  ),
-                ],
+              IconButton(
+                visualDensity: VisualDensity.compact,
+                icon: const Icon(Icons.edit, size: 20),
+                onPressed: onEdit,
               ),
             ],
           ),

@@ -1,10 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
+import '../../../core/networking/api_client.dart';
+import '../../../features/auth/state/auth_controller.dart';
 import '../data/customer_repository.dart';
 import '../domain/customer_models.dart';
 
 final customerRepositoryProvider = Provider<CustomerRepository>((ref) {
-  return FakeCustomerRepository(); // swap with ApiCustomerRepository later
+  final apiClient = ref.read(apiClientProvider);
+  return CustomerRepository(apiClient);
 });
 
 final customerListProvider =
@@ -63,7 +66,7 @@ class CustomerListController extends StateNotifier<CustomerListState> {
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        error: "Failed to load customers",
+        error: e.toString(),
       );
     }
   }
@@ -86,16 +89,20 @@ class CustomerListController extends StateNotifier<CustomerListState> {
     bool match(Customer c) {
       final nic = c.nic.toLowerCase();
       final name = c.name.toLowerCase();
-      final phone = c.phone.toLowerCase();
+      final route = c.routeCode.toLowerCase();
+      final status = c.status.toString().toLowerCase();
+      
       switch (state.searchBy) {
         case CustomerSearchBy.nic:
           return nic.contains(q);
         case CustomerSearchBy.name:
           return name.contains(q);
-        case CustomerSearchBy.phone:
-          return phone.contains(q);
+        case CustomerSearchBy.route:
+          return route.contains(q);
+        case CustomerSearchBy.status:
+          return status.contains(q);
         case CustomerSearchBy.all:
-          return nic.contains(q) || name.contains(q) || phone.contains(q);
+          return nic.contains(q) || name.contains(q) || route.contains(q) || status.contains(q);
       }
     }
 

@@ -1,6 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
+import '../../auth/state/auth_controller.dart';
+import '../data/loan_package_repository.dart';
 import '../domain/loan_package_models.dart';
+
+final loanPackageRepositoryProvider = Provider<LoanPackageRepository>((ref) {
+  final apiClient = ref.read(apiClientProvider);
+  return LoanPackageRepository(apiClient);
+});
 
 final loanPackageProvider =
     StateNotifierProvider<LoanPackageController, LoanPackageState>(
@@ -70,68 +77,51 @@ class LoanPackageController extends StateNotifier<LoanPackageState> {
     state = state.copyWith(loading: true, clearError: true);
 
     try {
-      // TODO: Replace with API call using:
-      // state.filters.searchBy + state.filters.query
-      await Future.delayed(const Duration(milliseconds: 450));
-
-      final all = <LoanPackageRowModel>[
-        LoanPackageRowModel(
-          packageId: "1",
-          packageCode: "LP001",
-          packageName: "Quick Cash 30",
-          timePeriodDays: 30,
-          interestRatePercent: 10,
-          createdDate: DateTime(2024, 1, 21),
-        ),
-        LoanPackageRowModel(
-          packageId: "2",
-          packageCode: "LP002",
-          packageName: "Standard 60",
-          timePeriodDays: 60,
-          interestRatePercent: 15,
-          createdDate: DateTime(2024, 1, 21),
-        ),
-        LoanPackageRowModel(
-          packageId: "3",
-          packageCode: "LP003",
-          packageName: "Extended 90",
-          timePeriodDays: 90,
-          interestRatePercent: 18,
-          createdDate: DateTime(2024, 1, 21),
-        ),
-        LoanPackageRowModel(
-          packageId: "4",
-          packageCode: "LP004",
-          packageName: "Premium 120",
-          timePeriodDays: 120,
-          interestRatePercent: 20,
-          createdDate: DateTime(2024, 1, 21),
-        ),
-      ];
+      final repo = ref.read(loanPackageRepositoryProvider);
+      List<LoanPackageRowModel> packages;
 
       final f = state.filters;
-      final q = f.query.trim().toLowerCase();
+      final q = f.query.trim();
 
-      final filtered = all.where((p) {
-        if (q.isEmpty) return true;
-
+      if (q.isEmpty) {
+        packages = await repo.getLoanPackages();
+      } else {
         switch (f.searchBy) {
           case LoanPackageSearchBy.all:
-            return p.packageCode.toLowerCase().contains(q) ||
-                p.packageName.toLowerCase().contains(q);
+            packages = await repo.getLoanPackages();
+            packages = packages.where((p) {
+              final query = q.toLowerCase();
+              return p.packageCode.toLowerCase().contains(query) ||
+                  p.packageName.toLowerCase().contains(query);
+            }).toList();
+            break;
           case LoanPackageSearchBy.code:
-            return p.packageCode.toLowerCase().contains(q);
+            packages = await repo.searchByCode(q);
+            break;
           case LoanPackageSearchBy.name:
-            return p.packageName.toLowerCase().contains(q);
+            packages = await repo.searchByName(q);
+            break;
         }
-      }).toList();
+      }
 
-      state = state.copyWith(loading: false, rows: filtered);
-    } catch (e) {
+      state = state.copyWith(loading: false, rows: packages);
+    } catch (e, stackTrace) {
+      print('Error loading loan packages: $e');
+      print('Stack trace: $stackTrace');
       state = state.copyWith(
         loading: false,
-        error: "Failed to load loan packages",
+        error: "Failed to load loan packages: $e",
       );
+    }
+  }
+
+  Future<void> deleteLoanPackage(String packageCode) async {
+    try {
+      final repo = ref.read(loanPackageRepositoryProvider);
+      await repo.deleteLoanPackage(packageCode);
+      await load();
+    } catch (e) {
+      state = state.copyWith(error: "Failed to delete loan package");
     }
   }
 }

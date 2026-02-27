@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../app/theme/app_colors.dart';
+import '../../../app/widgets/app_bottom_nav.dart';
 
 import '../state/loan_details_controller.dart';
 import '../domain/loan_details_models.dart';
@@ -98,20 +98,9 @@ class LoanDetailsPage extends ConsumerWidget {
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 1,
-        selectedItemColor: AppColors.secondary,
-        unselectedItemColor: Colors.grey,
-        onTap: (index) {
-          if (index == 0) context.go('/home');
-          if (index == 1) context.go('/customers');
-        },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Dashboard"),
-          BottomNavigationBarItem(icon: Icon(Icons.people), label: "Customers"),
-          BottomNavigationBarItem(icon: Icon(Icons.payment), label: "Payments"),
-          BottomNavigationBarItem(icon: Icon(Icons.more_horiz), label: "More"),
-        ],
+      bottomNavigationBar: const AppBottomNav(
+        currentIndex: 2,
+        pageName: "Loan",
       ),
     );
   }
@@ -208,16 +197,6 @@ class _Body extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(14),
-                    child: Image.asset(
-                      data.customer.avatarAsset ??
-                          'assets/images/sample_user.png',
-                      width: 68,
-                      height: 68,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(

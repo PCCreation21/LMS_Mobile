@@ -33,4 +33,17 @@ class LoanPackageRowModel {
     required this.interestRatePercent,
     required this.createdDate,
   });
+
+  factory LoanPackageRowModel.fromJson(Map<String, dynamic> json) {
+    return LoanPackageRowModel(
+      packageId: json['id']?.toString() ?? '',
+      packageCode: json['packageCode'] ?? '',
+      packageName: json['packageName'] ?? '',
+      timePeriodDays: json['timePeriod'] ?? 0,
+      interestRatePercent: (json['interest'] as num?)?.toDouble() ?? 0.0,
+      createdDate: json['createdDate'] != null
+          ? DateTime.parse(json['createdDate'])
+          : DateTime.now(),
+    );
+  }
 }

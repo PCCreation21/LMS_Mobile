@@ -94,7 +94,6 @@ class RouteFiltersBar extends StatelessWidget {
                   ),
                 ),
               ),
-              const Icon(Icons.search),
             ],
           ),
         ),

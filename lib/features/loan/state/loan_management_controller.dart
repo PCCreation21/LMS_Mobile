@@ -1,6 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
+import '../../auth/state/auth_controller.dart';
+import '../data/loan_repository.dart';
 import '../domain/loan_management_models.dart';
+
+final loanManagementRepositoryProvider = Provider<LoanRepository>((ref) {
+  final apiClient = ref.read(apiClientProvider);
+  return LoanRepository(apiClient);
+});
 
 final loanManagementProvider =
     StateNotifierProvider<LoanManagementController, LoanManagementState>(
@@ -100,106 +107,30 @@ class LoanManagementController extends StateNotifier<LoanManagementState> {
     state = state.copyWith(loading: true, clearError: true);
 
     try {
-      // ✅ These are the values you send to API
-      final selectedStatus = state.status; // All / Active / Overdue / Completed
-      final selectedRoute = state.selectedRoute; // null => All Routes
-      final f = state.filters; // NIC, LoanCode, From/To
+      final repo = ref.read(loanManagementRepositoryProvider);
 
-      // TODO: Replace with API call using:
-      // selectedStatus, selectedRoute, f.nic, f.loanCode, f.from, f.to
-      await Future.delayed(const Duration(milliseconds: 500));
+      final selectedStatus = state.status;
+      final selectedRoute = state.selectedRoute;
+      final f = state.filters;
 
-      // ---- MOCK DATA (add route into mock so you can filter) ----
-      final all = <_LoanRowInternal>[
-        const _LoanRowInternal(
-          row: LoanRowModel(
-            loanId: "1",
-            loanNo: "LN20240001",
-            customer: "Amara Perera",
-            packageCode: "LP001",
-            arrears: "-",
-            status: LoanStatus.open,
-          ),
-          route: "R001",
-          nic: "200012345V",
-        ),
-        const _LoanRowInternal(
-          row: LoanRowModel(
-            loanId: "2",
-            loanNo: "LN20240002",
-            customer: "Kamal Silva",
-            packageCode: "LP002",
-            arrears: "LKR 19,160",
-            status: LoanStatus.arrears,
-          ),
-          route: "R004",
-          nic: "199976543V",
-        ),
-        const _LoanRowInternal(
-          row: LoanRowModel(
-            loanId: "3",
-            loanNo: "LN20230015",
-            customer: "Nimal Fernando",
-            packageCode: "LP003",
-            arrears: "-",
-            status: LoanStatus.completed,
-          ),
-          route: "R003",
-          nic: "199912312V",
-        ),
-      ];
+      List<LoanRowModel> loans = await repo.getLoans(
+        status: selectedStatus,
+        routeCode: selectedRoute,
+        nic: f.nic.trim().isEmpty ? null : f.nic.trim(),
+      );
 
-      // ---- FILTERING ----
-      final filtered = all
-          .where((x) {
-            final r = x.row;
+      // Client-side filter for loan code if needed
+      if (f.loanCode.trim().isNotEmpty) {
+        loans = loans.where((loan) {
+          return loan.loanNo.toLowerCase().contains(
+            f.loanCode.trim().toLowerCase(),
+          );
+        }).toList();
+      }
 
-            // 1) Status filter
-            final okStatus =
-                selectedStatus == LoanStatus.all || r.status == selectedStatus;
-
-            // 2) Route filter
-            final okRoute = selectedRoute == null
-                ? true
-                : x.route.toLowerCase() == selectedRoute.toLowerCase();
-
-            // 3) Advanced filter: NIC
-            final okNic = f.nic.trim().isEmpty
-                ? true
-                : x.nic.toLowerCase().contains(f.nic.trim().toLowerCase());
-
-            // 4) Advanced filter: Loan Code
-            final okLoanCode = f.loanCode.trim().isEmpty
-                ? true
-                : r.loanNo.toLowerCase().contains(
-                    f.loanCode.trim().toLowerCase(),
-                  );
-
-            // 5) Advanced filter: From/To dates
-            // In this mock, we don't have real date field, so we skip.
-            // When you have real loanDate, implement date checks here.
-
-            return okStatus && okRoute && okNic && okLoanCode;
-          })
-          .map((x) => x.row)
-          .toList();
-
-      state = state.copyWith(loading: false, rows: filtered);
+      state = state.copyWith(loading: false, rows: loans);
     } catch (e) {
       state = state.copyWith(loading: false, error: "Failed to load loans");
     }
   }
-}
-
-/// Internal helper for mock filtering (route, nic, etc.)
-class _LoanRowInternal {
-  final LoanRowModel row;
-  final String route;
-  final String nic;
-
-  const _LoanRowInternal({
-    required this.row,
-    required this.route,
-    required this.nic,
-  });
 }

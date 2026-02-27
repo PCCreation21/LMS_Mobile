@@ -1,13 +1,21 @@
 class LoanPackageLite {
   final String id;
   final String name;
-  final int durationMonths;
+  final int durationDays;
 
   const LoanPackageLite({
     required this.id,
     required this.name,
-    required this.durationMonths,
+    required this.durationDays,
   });
+
+  factory LoanPackageLite.fromJson(Map<String, dynamic> json) {
+    return LoanPackageLite(
+      id: json['packageCode'] ?? '',
+      name: json['packageName'] ?? '',
+      durationDays: json['timePeriod'] ?? 0,
+    );
+  }
 }
 
 class IssueLoanRequest {

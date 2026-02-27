@@ -1,6 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:loan_management_system/features/loan/domain/loan_models.dart';
+import '../../auth/state/auth_controller.dart';
+import '../data/loan_repository.dart';
+
+final loanRepositoryProvider = Provider<LoanRepository>((ref) {
+  final apiClient = ref.read(apiClientProvider);
+  return LoanRepository(apiClient);
+});
 
 final issueLoanControllerProvider =
     StateNotifierProvider<IssueLoanController, IssueLoanState>(
@@ -50,44 +57,43 @@ class IssueLoanState {
     );
   }
 
-  factory IssueLoanState.initial() => const IssueLoanState(
-    packages: [
-      LoanPackageLite(id: "LP001", name: "3 Months Package", durationMonths: 3),
-      LoanPackageLite(id: "LP002", name: "6 Months Package", durationMonths: 6),
-      LoanPackageLite(
-        id: "LP003",
-        name: "12 Months Package",
-        durationMonths: 12,
-      ),
-    ],
-  );
+  factory IssueLoanState.initial() => const IssueLoanState();
 }
 
 class IssueLoanController extends StateNotifier<IssueLoanState> {
-  IssueLoanController(this.ref) : super(IssueLoanState.initial());
+  IssueLoanController(this.ref) : super(IssueLoanState.initial()) {
+    _loadLoanPackages();
+  }
 
   final Ref ref;
+
+  Future<void> _loadLoanPackages() async {
+    try {
+      final repo = ref.read(loanRepositoryProvider);
+      final packages = await repo.getLoanPackages();
+      state = state.copyWith(packages: packages);
+    } catch (e) {
+      // Keep default packages if API fails
+    }
+  }
+
+  void resetForm() {
+    state = IssueLoanState(packages: state.packages);
+  }
 
   Future<void> searchCustomerByNic(String nic) async {
     state = state.copyWith(isLoading: true, clearError: true);
 
     try {
-      // TODO: Replace with API call
-      await Future.delayed(const Duration(milliseconds: 700));
-
-      // Mock: if NIC ends with 5 => not found
-      if (nic.trim().endsWith("5")) {
-        state = state.copyWith(
-          isLoading: false,
-          customerName: "",
-          error: "Customer not found for this NIC",
-        );
-        return;
-      }
-
-      state = state.copyWith(isLoading: false, customerName: "John Doe");
+      final repo = ref.read(loanRepositoryProvider);
+      final customer = await repo.getCustomerByNic(nic.trim());
+      state = state.copyWith(isLoading: false, customerName: customer.name);
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: "Search failed");
+      state = state.copyWith(
+        isLoading: false,
+        customerName: "",
+        error: "Customer not found for this NIC",
+      );
     }
   }
 
@@ -107,18 +113,7 @@ class IssueLoanController extends StateNotifier<IssueLoanState> {
 
   DateTime? _calcEndDate(DateTime? start, LoanPackageLite? pkg) {
     if (start == null || pkg == null) return null;
-
-    // endDate = startDate + durationMonths (same day)
-    final y = start.year;
-    final m = start.month + pkg.durationMonths;
-    final newYear = y + ((m - 1) ~/ 12);
-    final newMonth = ((m - 1) % 12) + 1;
-
-    // Keep day safe (avoid invalid dates like Feb 30)
-    final lastDay = DateTime(newYear, newMonth + 1, 0).day;
-    final day = start.day > lastDay ? lastDay : start.day;
-
-    return DateTime(newYear, newMonth, day);
+    return start.add(Duration(days: pkg.durationDays));
   }
 
   Future<String?> issueLoan({
@@ -131,11 +126,16 @@ class IssueLoanController extends StateNotifier<IssueLoanState> {
     state = state.copyWith(isLoading: true, clearError: true);
 
     try {
-      // TODO: Replace with API call
-      await Future.delayed(const Duration(seconds: 1));
-
+      final repo = ref.read(loanRepositoryProvider);
+      final loanNumber = await repo.issueLoan(
+        nic: nic.trim(),
+        amount: amount,
+        loanPackageCode: pkg.id,
+        startDate: startDate,
+        endDate: endDate,
+      );
       state = state.copyWith(isLoading: false);
-      return "LOAN${DateTime.now().millisecondsSinceEpoch}";
+      return loanNumber;
     } catch (e) {
       state = state.copyWith(isLoading: false, error: "Issue loan failed");
       return null;

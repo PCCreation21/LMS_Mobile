@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import '../domain/customer_models.dart';
+import './customer_list_controller.dart';
 
 final createCustomerControllerProvider =
     StateNotifierProvider<CreateCustomerController, CreateCustomerState>(
@@ -48,16 +49,14 @@ class CreateCustomerController extends StateNotifier<CreateCustomerState> {
     state = state.copyWith(isLoading: true, error: null);
 
     try {
-      // TODO: Replace with API call
-      await Future.delayed(const Duration(seconds: 1));
-
-      // fake success
+      final repo = ref.read(customerRepositoryProvider);
+      await repo.createCustomer(req);
       state = state.copyWith(isLoading: false);
       return true;
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        error: "Failed to create customer",
+        error: e.toString(),
       );
       return false;
     }

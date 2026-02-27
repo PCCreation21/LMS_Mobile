@@ -55,4 +55,47 @@ class ReceiptModel {
     required this.closingBalance,
     required this.qrValue,
   });
+
+  factory ReceiptModel.fromJson(Map<String, dynamic> json) {
+    final loanAmount = (json['loanAmount'] as num?)?.toDouble() ?? 0.0;
+    final totalPaid = (json['totalPaid'] as num?)?.toDouble() ?? 0.0;
+    final rental = (json['rental'] as num?)?.toDouble() ?? 0.0;
+    final totalDue = loanAmount - totalPaid;
+    
+    final startDate = json['startDate'] != null
+        ? DateTime.parse(json['startDate'])
+        : DateTime.now();
+    final endDate = json['endDate'] != null
+        ? DateTime.parse(json['endDate'])
+        : DateTime.now();
+    
+    final durationDays = json['timePeriod'] ?? endDate.difference(startDate).inDays;
+    
+    return ReceiptModel(
+      companyName: "Golden Cash",
+      subtitle: "Micro Credit Investment",
+      tel: "+94 11 234 5678",
+      receiptTitle: "PAYMENT RECEIPT",
+      billDateTime: DateTime.now(),
+      route: json['routeCode'] ?? '',
+      loanNo: json['loanNumber'] ?? '',
+      customerName: json['customerName'] ?? '',
+      loanCode: json['packageCode'] ?? '',
+      loanAmount: loanAmount,
+      durationDays: durationDays,
+      startDate: startDate,
+      endDate: endDate,
+      lastPaidDate: json['lastPaidDate'] != null
+          ? DateTime.parse(json['lastPaidDate'])
+          : DateTime.now(),
+      rental: rental,
+      totalPaid: totalPaid,
+      totalDue: totalDue,
+      todayPaid: 0,
+      broughtForward: totalDue,
+      arrears: (json['arrears'] as num?)?.toDouble() ?? 0.0,
+      closingBalance: totalDue,
+      qrValue: "goldencash://loan/${json['loanNumber'] ?? ''}",
+    );
+  }
 }

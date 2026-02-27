@@ -118,7 +118,7 @@ class _LoanManagementPageState extends ConsumerState<LoanManagementPage> {
                             LoanTable(
                               rows: state.rows,
                               onRowTap: (row) {
-                                context.push('/loans/${row.loanId}');
+                                context.push('/loans/${row.loanNo}');
                               },
                             ),
                         ],

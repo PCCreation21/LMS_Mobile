@@ -39,7 +39,7 @@ class _CustomerListPageState extends ConsumerState<CustomerListPage> {
           SafeArea(
             child: Column(
               children: [
-                AppHeaderBar(onBack: () => context.pop()),
+                AppHeaderBar(onBack: () => context.go('/home')),
 
                 Expanded(
                   child: Padding(
@@ -85,8 +85,12 @@ class _CustomerListPageState extends ConsumerState<CustomerListPage> {
                                           child: Text("Customer Name"),
                                         ),
                                         DropdownMenuItem(
-                                          value: CustomerSearchBy.phone,
-                                          child: Text("Phone Number"),
+                                          value: CustomerSearchBy.route,
+                                          child: Text("Route"),
+                                        ),
+                                        DropdownMenuItem(
+                                          value: CustomerSearchBy.status,
+                                          child: Text("Status"),
                                         ),
                                       ],
                                       onChanged: (v) {
@@ -108,28 +112,20 @@ class _CustomerListPageState extends ConsumerState<CustomerListPage> {
                                   controller: _searchCtrl,
                                   onChanged: controller.setQuery,
                                   decoration: const InputDecoration(
-                                    hintText: "NIC, name, or phone...",
+                                    hintText: "NIC, name, route or status",
                                   ),
                                 ),
                               ),
                               const SizedBox(width: 10),
-                              SizedBox(
-                                height: 48,
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFFC8922D),
-                                  ),
-                                  onPressed: state.isLoading
-                                      ? null
-                                      : controller.applySearch,
-                                  child: const Text("Search"),
-                                ),
+                              IconButton(
+                                icon: const Icon(Icons.search),
+                                iconSize: 24,
+                                color: const Color(0xFF1F5B49),
+                                onPressed: controller.applySearch,
                               ),
                             ],
                           ),
-
                           const SizedBox(height: 16),
-
                           Expanded(
                             child: Builder(
                               builder: (_) {

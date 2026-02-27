@@ -1,6 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import '../domain/route_models.dart';
+import '../data/route_repository.dart';
+import '../../auth/state/auth_controller.dart';
+
+final _routeRepoProvider = Provider((ref) {
+  final apiClient = ref.read(apiClientProvider);
+  return RouteRepository(apiClient);
+});
 
 final routeProvider = StateNotifierProvider<RouteController, RouteState>(
   (ref) => RouteController(ref),
@@ -65,49 +72,8 @@ class RouteController extends StateNotifier<RouteState> {
   Future<void> load() async {
     state = state.copyWith(loading: true, clearError: true);
     try {
-      // TODO: API call with state.filters.searchBy + state.filters.query
-      await Future.delayed(const Duration(milliseconds: 450));
-
-      final all = <RouteRowModel>[
-        RouteRowModel(
-          routeId: "1",
-          routeCode: "R001",
-          routeName: "Colombo Central",
-          routeDescription:
-              "Main commercial district including Fort and Pettah areas",
-          officerName: "John Smith",
-          date: DateTime(2024, 1, 21),
-          status: "Completed",
-        ),
-        RouteRowModel(
-          routeId: "2",
-          routeCode: "R002",
-          routeName: "Galle Road",
-          routeDescription:
-              "Coastal route covering main businesses and residential areas",
-          officerName: "Sarah Johnson",
-          date: DateTime(2024, 1, 21),
-          status: "Partial",
-        ),
-        RouteRowModel(
-          routeId: "3",
-          routeCode: "R003",
-          routeName: "Kandy Main",
-          routeDescription: "Central province main collection route",
-          officerName: null,
-          date: DateTime(2024, 1, 21),
-          status: "LKR 0",
-        ),
-        RouteRowModel(
-          routeId: "4",
-          routeCode: "R004",
-          routeName: "Negombo Beach",
-          routeDescription: "Tourist belt and surrounding areas",
-          officerName: "John Smith",
-          date: DateTime(2024, 1, 21),
-          status: "Completed",
-        ),
-      ];
+      final repo = ref.read(_routeRepoProvider);
+      final all = await repo.getRoutes();
 
       final f = state.filters;
       final q = f.query.trim().toLowerCase();

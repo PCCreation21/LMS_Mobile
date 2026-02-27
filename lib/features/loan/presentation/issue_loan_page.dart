@@ -24,6 +24,16 @@ class _IssueLoanPageState extends ConsumerState<IssueLoanPage> {
   final _amountCtrl = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(issueLoanControllerProvider.notifier).resetForm();
+      _nicCtrl.clear();
+      _amountCtrl.clear();
+    });
+  }
+
+  @override
   void dispose() {
     _nicCtrl.dispose();
     _customerNameCtrl.dispose();
@@ -224,7 +234,7 @@ class _IssueLoanPageState extends ConsumerState<IssueLoanPage> {
                                       .map(
                                         (p) => DropdownMenuItem(
                                           value: p,
-                                          child: Text(p.name),
+                                          child: Text("${p.id} - ${p.name}"),
                                         ),
                                       )
                                       .toList(),

@@ -72,6 +72,27 @@ class Customer {
     required this.loanNumbers,
   });
 
+  factory Customer.fromJson(Map<String, dynamic> json) {
+    return Customer(
+      id: json['id'].toString(),
+      nic: json['nic'],
+      name: json['customerName'] ?? json['name'],
+      phone: json['phoneNumber'] ?? json['phone'],
+      secondaryPhone: json['secondaryPhoneNumber'] ?? json['secondaryPhone'],
+      address: json['address'],
+      email: json['email'],
+      gender: Gender.values.firstWhere(
+        (e) => e.name.toLowerCase() == json['gender'].toString().toLowerCase(),
+      ),
+      routeCode: json['routeCode'],
+      createdDate: DateTime.parse(json['createdDate']),
+      status: CustomerStatus.values.firstWhere(
+        (e) => e.name.toLowerCase() == json['status'].toString().toLowerCase(),
+      ),
+      loanNumbers: (json['loanNumbers'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
+    );
+  }
+
   Customer copyWith({
     String? nic,
     String? name,
@@ -103,7 +124,7 @@ class Customer {
 }
 
 /// ✅ Used in Customer List filtering dropdown
-enum CustomerSearchBy { all, nic, name, phone }
+enum CustomerSearchBy { all, nic, name, route, status }
 
 /// ✅ Used when updating customer account (only editable fields)
 class UpdateCustomerRequest {

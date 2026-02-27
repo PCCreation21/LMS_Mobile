@@ -1,113 +1,134 @@
+import 'package:dio/dio.dart';
+import '../../../core/networking/api_client.dart';
+import '../../../core/networking/endpoints.dart';
 import '../domain/customer_models.dart';
 
-abstract class CustomerRepository {
-  Future<List<Customer>> getCustomers();
-  Future<Customer> getCustomerById(String id);
+class CustomerRepository {
+  final ApiClient _apiClient;
 
-  /// Update existing customer (NIC uniqueness should be handled by controller/UI)
-  Future<Customer> updateCustomer(Customer updated);
+  CustomerRepository(this._apiClient);
 
-  Future<void> deleteCustomer(String id);
+  Future<List<Customer>> getCustomers({String? search, String? routeCode, String? status}) async {
+    try {
+      final queryParams = <String, dynamic>{};
+      if (search != null) queryParams['search'] = search;
+      if (routeCode != null) queryParams['routeCode'] = routeCode;
+      if (status != null) queryParams['status'] = status;
 
-  /// ✅ Helper for NIC uniqueness check (useful for update form)
-  Future<bool> isNicUnique(String nic, {String? excludeCustomerId});
-}
-
-class FakeCustomerRepository implements CustomerRepository {
-  final List<Customer> _db = [
-    Customer(
-      id: "1",
-      nic: "199512345678",
-      name: "Amara Perera",
-      phone: "+94 77 123 4567",
-      secondaryPhone: "+94 71 111 2222",
-      address: "45 Temple Road, Colombo 06",
-      email: "amara@email.com",
-      gender: Gender.female,
-      routeCode: "R001",
-      createdDate: DateTime(2024, 4, 20),
-      status: CustomerStatus.active,
-      loanNumbers: const ["LN-00012", "LN-00018"],
-    ),
-    Customer(
-      id: "2",
-      nic: "1988223456789",
-      name: "Kamal Silva",
-      phone: "+94 76 234 5678",
-      address: "78 Beach Road, Negombo",
-      gender: Gender.male,
-      routeCode: "R004",
-      createdDate: DateTime(2024, 3, 10),
-      status: CustomerStatus.active,
-      loanNumbers: const ["LN-00021"],
-    ),
-    Customer(
-      id: "3",
-      nic: "199234567890",
-      name: "Nimal Fernando",
-      phone: "+94 75 345 6789",
-      address: "123 Main Street, Kandy",
-      gender: Gender.male,
-      routeCode: "R003",
-      createdDate: DateTime(2024, 1, 2),
-      status: CustomerStatus.inactive,
-      loanNumbers: const [],
-    ),
-  ];
-
-  @override
-  Future<List<Customer>> getCustomers() async {
-    await Future.delayed(const Duration(milliseconds: 250));
-    return List.unmodifiable(_db);
-  }
-
-  @override
-  Future<Customer> getCustomerById(String id) async {
-    await Future.delayed(const Duration(milliseconds: 200));
-
-    final idx = _db.indexWhere((x) => x.id == id);
-    if (idx == -1) {
-      throw StateError("Customer not found for id: $id");
-    }
-    return _db[idx];
-  }
-
-  @override
-  Future<Customer> updateCustomer(Customer updated) async {
-    await Future.delayed(const Duration(milliseconds: 300));
-
-    final idx = _db.indexWhere((x) => x.id == updated.id);
-    if (idx == -1) {
-      throw StateError(
-        "Cannot update. Customer not found for id: ${updated.id}",
+      final response = await _apiClient.get(
+        ApiEndpoints.customers,
+        queryParameters: queryParams.isEmpty ? null : queryParams,
       );
-    }
 
-    _db[idx] = updated;
-    return updated;
+      final data = response.data;
+      if (data is List) {
+        return data.map((json) => _fromJson(json)).toList();
+      }
+      return [];
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
   }
 
-  @override
+  Future<Customer> updateCustomer(Customer customer) async {
+    try {
+      final response = await _apiClient.put(
+        '/api/customers/${customer.id}',
+        data: {
+          'nic': customer.nic,
+          'customerName': customer.name,
+          'phoneNumber': customer.phone,
+          'address': customer.address,
+          'routeCode': customer.routeCode,
+          'email': customer.email,
+          'secondaryPhoneNumber': customer.secondaryPhone,
+        },
+      );
+      return _fromJson(response.data);
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  Future<Customer> createCustomer(CreateCustomerRequest request) async {
+    try {
+      final response = await _apiClient.post(
+        ApiEndpoints.customers,
+        data: {
+          'nic': request.nic,
+          'customerName': request.name,
+          'phoneNumber': request.phone,
+          'address': '${request.addressLine1}, ${request.street1}${request.street2 != null ? ', ${request.street2}' : ''}${request.street3 != null ? ', ${request.street3}' : ''}',
+          'routeCode': request.routeCode,
+          'email': request.email,
+          'gender': request.gender.name.toUpperCase(),
+          'secondaryPhoneNumber': request.secondaryPhone,
+          'status': request.status.name.toUpperCase(),
+        },
+      );
+      return _fromJson(response.data);
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+
   Future<void> deleteCustomer(String id) async {
-    await Future.delayed(const Duration(milliseconds: 250));
-
-    final idx = _db.indexWhere((x) => x.id == id);
-    if (idx == -1) {
-      throw StateError("Cannot delete. Customer not found for id: $id");
+    try {
+      await _apiClient.delete('/api/customers/$id');
+    } on DioException catch (e) {
+      throw _handleError(e);
     }
-
-    _db.removeAt(idx);
   }
 
-  @override
-  Future<bool> isNicUnique(String nic, {String? excludeCustomerId}) async {
-    await Future.delayed(const Duration(milliseconds: 120));
-
-    final n = nic.trim().toLowerCase();
-    return !_db.any(
-      (c) =>
-          c.nic.trim().toLowerCase() == n &&
-          (excludeCustomerId == null || c.id != excludeCustomerId),
+  Customer _fromJson(Map<String, dynamic> json) {
+    return Customer(
+      id: json['id']?.toString() ?? '',
+      nic: json['nic'] ?? '',
+      name: json['customerName'] ?? '',
+      phone: json['phoneNumber'] ?? '',
+      secondaryPhone: json['secondaryPhoneNumber'],
+      address: json['address'] ?? '',
+      email: json['email'],
+      gender: _parseGender(json['gender']),
+      routeCode: json['routeCode'] ?? '',
+      createdDate: DateTime.tryParse(json['createdDate'] ?? '') ?? DateTime.now(),
+      status: _parseStatus(json['status']),
+      loanNumbers: [],
     );
+  }
+
+  Gender _parseGender(String? value) {
+    if (value == null) return Gender.other;
+    switch (value.toLowerCase()) {
+      case 'male':
+        return Gender.male;
+      case 'female':
+        return Gender.female;
+      default:
+        return Gender.other;
+    }
+  }
+
+  CustomerStatus _parseStatus(String? value) {
+    if (value == null) return CustomerStatus.active;
+    return value.toLowerCase() == 'active' ? CustomerStatus.active : CustomerStatus.inactive;
+  }
+
+  String _handleError(DioException e) {
+    if (e.response != null) {
+      final data = e.response!.data;
+      if (data is Map && data.containsKey('message')) {
+        return data['message'];
+      }
+      return 'Server error: ${e.response!.statusCode}';
+    }
+    if (e.type == DioExceptionType.connectionTimeout ||
+        e.type == DioExceptionType.receiveTimeout) {
+      return 'Connection timeout';
+    }
+    if (e.type == DioExceptionType.connectionError) {
+      return 'Cannot connect to server';
+    }
+    return 'An unexpected error occurred';
   }
 }

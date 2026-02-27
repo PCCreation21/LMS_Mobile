@@ -163,16 +163,33 @@ class _LoanPackageManagementPageState
                                           ),
                                         );
                                       },
-                                      onDelete: (p) {
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          SnackBar(
+                                      onDelete: (p) async {
+                                        final confirm = await showDialog<bool>(
+                                          context: context,
+                                          builder: (ctx) => AlertDialog(
+                                            title: const Text('Delete Package'),
                                             content: Text(
-                                              "Delete ${p.packageCode}",
+                                              'Delete ${p.packageCode}?',
                                             ),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () =>
+                                                    Navigator.pop(ctx, false),
+                                                child: const Text('Cancel'),
+                                              ),
+                                              TextButton(
+                                                onPressed: () =>
+                                                    Navigator.pop(ctx, true),
+                                                child: const Text('Delete'),
+                                              ),
+                                            ],
                                           ),
                                         );
+                                        if (confirm == true) {
+                                          await controller.deleteLoanPackage(
+                                            p.packageCode,
+                                          );
+                                        }
                                       },
                                     )
                                   : Column(
@@ -191,16 +208,47 @@ class _LoanPackageManagementPageState
                                                   ),
                                                 );
                                               },
-                                              onDelete: () {
-                                                ScaffoldMessenger.of(
-                                                  context,
-                                                ).showSnackBar(
-                                                  SnackBar(
-                                                    content: Text(
-                                                      "Delete ${p.packageCode}",
+                                              onDelete: () async {
+                                                final confirm =
+                                                    await showDialog<bool>(
+                                                  context: context,
+                                                  builder: (ctx) => AlertDialog(
+                                                    title: const Text(
+                                                      'Delete Package',
                                                     ),
+                                                    content: Text(
+                                                      'Delete ${p.packageCode}?',
+                                                    ),
+                                                    actions: [
+                                                      TextButton(
+                                                        onPressed: () =>
+                                                            Navigator.pop(
+                                                              ctx,
+                                                              false,
+                                                            ),
+                                                        child: const Text(
+                                                          'Cancel',
+                                                        ),
+                                                      ),
+                                                      TextButton(
+                                                        onPressed: () =>
+                                                            Navigator.pop(
+                                                              ctx,
+                                                              true,
+                                                            ),
+                                                        child: const Text(
+                                                          'Delete',
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
                                                 );
+                                                if (confirm == true) {
+                                                  await controller
+                                                      .deleteLoanPackage(
+                                                        p.packageCode,
+                                                      );
+                                                }
                                               },
                                             ),
                                           )

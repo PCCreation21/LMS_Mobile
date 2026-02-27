@@ -55,25 +55,7 @@ class _UpdateCustomerPageState extends ConsumerState<UpdateCustomerPage> {
 
     final controller = ref.read(customerListProvider.notifier);
 
-    // ✅ NIC uniqueness check (only if NIC changed)
-    final newNic = _nicCtrl.text.trim();
-    if (newNic.toLowerCase() != original.nic.trim().toLowerCase()) {
-      final unique = controller.isNicUnique(
-        newNic,
-        excludeCustomerId: original.id,
-      );
-      if (!unique) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("NIC already exists. Please use a unique NIC."),
-          ),
-        );
-        return;
-      }
-    }
-
     final updated = original.copyWith(
-      nic: _nicCtrl.text.trim(),
       name: _nameCtrl.text.trim(),
       phone: _phoneCtrl.text.trim(),
       secondaryPhone: _secPhoneCtrl.text.trim().isEmpty
@@ -82,9 +64,6 @@ class _UpdateCustomerPageState extends ConsumerState<UpdateCustomerPage> {
       address: _addressCtrl.text.trim(),
       email: _emailCtrl.text.trim().isEmpty ? null : _emailCtrl.text.trim(),
       routeCode: _routeCode!,
-      // status NOT editable here (per spec)
-      // createdDate NOT editable
-      // loanNumbers NOT editable
     );
 
     final ok = await controller.updateCustomer(updated);
@@ -151,7 +130,7 @@ class _UpdateCustomerPageState extends ConsumerState<UpdateCustomerPage> {
                               label: "NIC",
                               child: TextFormField(
                                 controller: _nicCtrl,
-                                validator: Validators.nic,
+                                enabled: false,
                                 decoration: const InputDecoration(
                                   hintText: "NIC",
                                 ),
